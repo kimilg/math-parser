@@ -37,7 +37,7 @@ func (a *API) AddVariable(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	println("***");
-	println("classification : " + form.Classification)
+	println("classification : " + form.Classification.Category + ", " + form.Classification.Object)
 	println("variable : " + form.Variable)
 	println("description : " + form.Description)
 	println("***");
@@ -53,7 +53,7 @@ func (a *API) AddConstant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	println("***");
-	println("classification : " + form.Classification)
+	println("classification : " + form.Classification.Category + ", " + form.Classification.Object)
 	println("constant : " + form.Constant)
 	println("value : " + form.Value)
 	println("description : " + form.Description)

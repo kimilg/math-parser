@@ -1,5 +1,11 @@
 -- +goose up
-SELECT 'up SQL query';
+CREATE TABLE IF NOT EXISTS classifications
+(
+    id             UUID PRIMARY KEY,
+    created_at     TIMESTAMP NOT NULL,
+    updated_at     TIMESTAMP NOT NULL,
+    deleted_at     TIMESTAMP NULL
+);
 
 -- +goose down
-SELECT 'down SQL query';
+DROP TABLE IF EXISTS classifications;
