@@ -2,6 +2,8 @@ package math
 
 import (
 	"encoding/json"
+	"math-parser/api/resource/math/constant"
+	"math-parser/api/resource/math/variable"
 	"net/http"
 )
 
@@ -31,13 +33,12 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) AddVariable(w http.ResponseWriter, r *http.Request) {
-	form := &VariableForm{}
+	form := &variable.Form{}
 	if err := json.NewDecoder(r.Body).Decode(form); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	println("***");
-	println("classification : " + form.Classification.Category + ", " + form.Classification.Object)
 	println("variable : " + form.Variable)
 	println("description : " + form.Description)
 	println("***");
@@ -47,14 +48,12 @@ func (a *API) AddVariable(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) AddConstant(w http.ResponseWriter, r *http.Request) {
-	form := &ConstantForm{}
+	form := &constant.Form{}
 	if err := json.NewDecoder(r.Body).Decode(form); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	println("***");
-	println("classification : " + form.Classification.Category + ", " + form.Classification.Object)
-	println("constant : " + form.Constant)
 	println("value : " + form.Value)
 	println("description : " + form.Description)
 	println("***");
