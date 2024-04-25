@@ -1,9 +1,13 @@
 package variable
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+	"math-parser/api/resource/math/mathobj"
+)
 
 type Variable struct {
 	gorm.Model
+	Mathobjs []mathobj.Mathobj
 	Variables []Variable
 	value string
 	Coefficient int
