@@ -6,13 +6,9 @@ expr: OPENPAREN expr CLOSEPAREN
     | <assoc=right>expr POW expr
     | expr (MULT | DIV) expr
     | expr (PLUS | MINUS) expr
-    | expr (EQUAL | NEQUAL | LESS | GREAT | LESSEQ | GREATEQ) expr
-    | expr AND expr
-    | expr OR expr
     | constant | variable | fraction;
     
-binaryOperator: PLUS | MINUS | MULT | DIV | POW |
-                EQUAL | NEQUAL | LESS | GREAT | LESSEQ | GREATEQ | AND | OR;
+binaryOperator: PLUS | MINUS | MULT | DIV | POW | EQUAL ; 
 
 fraction: BACKSLASH 'frac' OPENCURLY expr CLOSECURLY OPENCURLY expr CLOSECURLY;
 
@@ -25,7 +21,7 @@ argumentTail: OPENPAREN argumentList CLOSEPAREN | OPENPAREN argumentList SEMICOL
 argumentList: expr argumentListTail;
 argumentListTail: COMMA expr argumentListTail | ;
 
-symbolList: SYMBOL symbolList |
+symbolList: SYMBOL symbolList | ;
 
 
 COMMA: ',';
@@ -37,29 +33,20 @@ OPENCURLY: '{';
 CLOSECURLY: '}';
 SUBSCRIPT: '_';
 SUPERSCRIPT: '^';
-BACKSLASH: '\';
+BACKSLASH: '\\';
 
 PLUS: '+';
 MINUS: '-';
 MULT: '*';
 DIV: '/';
 POW: '**';
-EQUAL: '==';
-NEQUAL: '!=';
-LESS: '<';
-GREAT: '>';
-LESSEQ: '<=';
-GREATEQ: '>=';
-AND: '&';
-OR: '|';
-
 EQUAL: '=';
 
 SYMBOL: [a-z|A-Z];
-ID: [a-z|A-Z]*;
-LINE_COMMENT : '//' .*? '\r'? '\n' -> skip;
+ID: [a-z|A-Z]+;
+LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 COMMENT: '/*' .*? '*/' -> skip;
 INTLIT: [0]|[1-9][0-9]*;
-SINGLEINTLIT: [0-9]
+SINGLEINTLIT: [0-9];
 FLOATLIT: INTLIT'.'[0-9]*;
 WS: [ \t\r\n]+ -> skip;
