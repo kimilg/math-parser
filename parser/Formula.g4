@@ -1,7 +1,6 @@
 grammar Formula;
 
-equation: 
-
+program: expr EQUAL expr;
 
 expr: OPENPAREN expr CLOSEPAREN
     | <assoc=right>expr POW expr
@@ -10,19 +9,28 @@ expr: OPENPAREN expr CLOSEPAREN
     | expr (EQUAL | NEQUAL | LESS | GREAT | LESSEQ | GREATEQ) expr
     | expr AND expr
     | expr OR expr
-    | constant | variable;
+    | constant | variable | fraction;
     
-constant: INTLIT | FLOATLIT;
 binaryOperator: PLUS | MINUS | MULT | DIV | POW |
                 EQUAL | NEQUAL | LESS | GREAT | LESSEQ | GREATEQ | AND | OR;
 
-fraction: BACKSLASH 'frac' OPENCURLY ID CLOSECURLY OPENCURLY ID CLOSECURLY
-mathSymbol: BACKSLASH ID mathSymbolTail | fraction
-mathSymbolTail: 
+fraction: BACKSLASH 'frac' OPENCURLY expr CLOSECURLY OPENCURLY expr CLOSECURLY;
 
-variable: ID variableTail;
-variableTail: SUBSCRIPT OPENCURLY  CLOSECURLY
-        
+constant: INTLIT | FLOATLIT;
+
+variable: ID subscriptTail argumentTail | BACKSLASH ID subscriptTail argumentTail ;
+subscriptTail: SUBSCRIPT OPENCURLY symbolList CLOSECURLY | SUBSCRIPT OPENCURLY INTLIT CLOSECURLY | SUBSCRIPT SYMBOL | SUBSCRIPT SINGLEINTLIT | ;
+argumentTail: OPENPAREN argumentList CLOSEPAREN | OPENPAREN argumentList SEMICOLON argumentList CLOSEPAREN | ;
+
+argumentList: expr argumentListTail;
+argumentListTail: COMMA expr argumentListTail | ;
+
+symbolList: SYMBOL symbolList |
+
+
+COMMA: ',';
+DOT: '.';
+SEMICOLON: ';';
 OPENPAREN: '(';
 CLOSEPAREN: ')';
 OPENCURLY: '{';
@@ -47,12 +55,11 @@ OR: '|';
 
 EQUAL: '=';
 
-
-
 SYMBOL: [a-z|A-Z];
 ID: [a-z|A-Z]*;
 LINE_COMMENT : '//' .*? '\r'? '\n' -> skip;
 COMMENT: '/*' .*? '*/' -> skip;
 INTLIT: [0]|[1-9][0-9]*;
+SINGLEINTLIT: [0-9]
 FLOATLIT: INTLIT'.'[0-9]*;
 WS: [ \t\r\n]+ -> skip;

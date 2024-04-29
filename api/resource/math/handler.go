@@ -23,6 +23,8 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	//equation := form.Equation
+	//apply grammar to parse after removing space.
+	
 	
 	
 	println("***");
