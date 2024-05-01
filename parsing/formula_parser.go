@@ -1,6 +1,6 @@
 // Code generated from Formula.g4 by ANTLR 4.13.1. DO NOT EDIT.
 
-package parsing // Formula
+package parser // Formula
 import (
 	"fmt"
 	"strconv"
@@ -38,64 +38,59 @@ func formulaParserInit() {
 	staticData.SymbolicNames = []string{
 		"", "", "COMMA", "DOT", "SEMICOLON", "OPENPAREN", "CLOSEPAREN", "OPENCURLY",
 		"CLOSECURLY", "SUBSCRIPT", "SUPERSCRIPT", "BACKSLASH", "PLUS", "MINUS",
-		"MULT", "DIV", "POW", "EQUAL", "SYMBOL", "ID", "LINE_COMMENT", "COMMENT",
-		"INTLIT", "SINGLEINTLIT", "FLOATLIT", "WS",
+		"MULT", "DIV", "POW", "EQUAL", "ID", "LINE_COMMENT", "COMMENT", "INTLIT",
+		"FLOATLIT", "WS",
 	}
 	staticData.RuleNames = []string{
-		"program", "expr", "binaryOperator", "fraction", "constant", "variable",
+		"equation", "expr", "binaryOperator", "fraction", "constant", "variable",
 		"subscriptTail", "argumentTail", "argumentList", "argumentListTail",
-		"symbolList",
 	}
 	staticData.PredictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
-		4, 1, 25, 119, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
-		4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 2, 10, 7,
-		10, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 3, 1, 35, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		5, 1, 46, 8, 1, 10, 1, 12, 1, 49, 9, 1, 1, 2, 1, 2, 1, 3, 1, 3, 1, 3, 1,
-		3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 4, 1, 4, 1, 5, 1, 5, 1, 5, 1, 5, 1,
-		5, 1, 5, 1, 5, 1, 5, 1, 5, 3, 5, 73, 8, 5, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6,
-		1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 3, 6, 89, 8, 6, 1,
-		7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 3, 7, 102,
-		8, 7, 1, 8, 1, 8, 1, 8, 1, 9, 1, 9, 1, 9, 1, 9, 1, 9, 3, 9, 112, 8, 9,
-		1, 10, 1, 10, 1, 10, 3, 10, 117, 8, 10, 1, 10, 0, 1, 2, 11, 0, 2, 4, 6,
-		8, 10, 12, 14, 16, 18, 20, 0, 4, 1, 0, 14, 15, 1, 0, 12, 13, 1, 0, 12,
-		17, 2, 0, 22, 22, 24, 24, 122, 0, 22, 1, 0, 0, 0, 2, 34, 1, 0, 0, 0, 4,
-		50, 1, 0, 0, 0, 6, 52, 1, 0, 0, 0, 8, 61, 1, 0, 0, 0, 10, 72, 1, 0, 0,
-		0, 12, 88, 1, 0, 0, 0, 14, 101, 1, 0, 0, 0, 16, 103, 1, 0, 0, 0, 18, 111,
-		1, 0, 0, 0, 20, 116, 1, 0, 0, 0, 22, 23, 3, 2, 1, 0, 23, 24, 5, 17, 0,
-		0, 24, 25, 3, 2, 1, 0, 25, 1, 1, 0, 0, 0, 26, 27, 6, 1, -1, 0, 27, 28,
-		5, 5, 0, 0, 28, 29, 3, 2, 1, 0, 29, 30, 5, 6, 0, 0, 30, 35, 1, 0, 0, 0,
-		31, 35, 3, 8, 4, 0, 32, 35, 3, 10, 5, 0, 33, 35, 3, 6, 3, 0, 34, 26, 1,
-		0, 0, 0, 34, 31, 1, 0, 0, 0, 34, 32, 1, 0, 0, 0, 34, 33, 1, 0, 0, 0, 35,
-		47, 1, 0, 0, 0, 36, 37, 10, 6, 0, 0, 37, 38, 5, 16, 0, 0, 38, 46, 3, 2,
-		1, 6, 39, 40, 10, 5, 0, 0, 40, 41, 7, 0, 0, 0, 41, 46, 3, 2, 1, 6, 42,
-		43, 10, 4, 0, 0, 43, 44, 7, 1, 0, 0, 44, 46, 3, 2, 1, 5, 45, 36, 1, 0,
-		0, 0, 45, 39, 1, 0, 0, 0, 45, 42, 1, 0, 0, 0, 46, 49, 1, 0, 0, 0, 47, 45,
-		1, 0, 0, 0, 47, 48, 1, 0, 0, 0, 48, 3, 1, 0, 0, 0, 49, 47, 1, 0, 0, 0,
-		50, 51, 7, 2, 0, 0, 51, 5, 1, 0, 0, 0, 52, 53, 5, 11, 0, 0, 53, 54, 5,
-		1, 0, 0, 54, 55, 5, 7, 0, 0, 55, 56, 3, 2, 1, 0, 56, 57, 5, 8, 0, 0, 57,
-		58, 5, 7, 0, 0, 58, 59, 3, 2, 1, 0, 59, 60, 5, 8, 0, 0, 60, 7, 1, 0, 0,
-		0, 61, 62, 7, 3, 0, 0, 62, 9, 1, 0, 0, 0, 63, 64, 5, 19, 0, 0, 64, 65,
-		3, 12, 6, 0, 65, 66, 3, 14, 7, 0, 66, 73, 1, 0, 0, 0, 67, 68, 5, 11, 0,
-		0, 68, 69, 5, 19, 0, 0, 69, 70, 3, 12, 6, 0, 70, 71, 3, 14, 7, 0, 71, 73,
-		1, 0, 0, 0, 72, 63, 1, 0, 0, 0, 72, 67, 1, 0, 0, 0, 73, 11, 1, 0, 0, 0,
-		74, 75, 5, 9, 0, 0, 75, 76, 5, 7, 0, 0, 76, 77, 3, 20, 10, 0, 77, 78, 5,
-		8, 0, 0, 78, 89, 1, 0, 0, 0, 79, 80, 5, 9, 0, 0, 80, 81, 5, 7, 0, 0, 81,
-		82, 5, 22, 0, 0, 82, 89, 5, 8, 0, 0, 83, 84, 5, 9, 0, 0, 84, 89, 5, 18,
-		0, 0, 85, 86, 5, 9, 0, 0, 86, 89, 5, 23, 0, 0, 87, 89, 1, 0, 0, 0, 88,
-		74, 1, 0, 0, 0, 88, 79, 1, 0, 0, 0, 88, 83, 1, 0, 0, 0, 88, 85, 1, 0, 0,
-		0, 88, 87, 1, 0, 0, 0, 89, 13, 1, 0, 0, 0, 90, 91, 5, 5, 0, 0, 91, 92,
-		3, 16, 8, 0, 92, 93, 5, 6, 0, 0, 93, 102, 1, 0, 0, 0, 94, 95, 5, 5, 0,
-		0, 95, 96, 3, 16, 8, 0, 96, 97, 5, 4, 0, 0, 97, 98, 3, 16, 8, 0, 98, 99,
-		5, 6, 0, 0, 99, 102, 1, 0, 0, 0, 100, 102, 1, 0, 0, 0, 101, 90, 1, 0, 0,
-		0, 101, 94, 1, 0, 0, 0, 101, 100, 1, 0, 0, 0, 102, 15, 1, 0, 0, 0, 103,
-		104, 3, 2, 1, 0, 104, 105, 3, 18, 9, 0, 105, 17, 1, 0, 0, 0, 106, 107,
-		5, 2, 0, 0, 107, 108, 3, 2, 1, 0, 108, 109, 3, 18, 9, 0, 109, 112, 1, 0,
-		0, 0, 110, 112, 1, 0, 0, 0, 111, 106, 1, 0, 0, 0, 111, 110, 1, 0, 0, 0,
-		112, 19, 1, 0, 0, 0, 113, 114, 5, 18, 0, 0, 114, 117, 3, 20, 10, 0, 115,
-		117, 1, 0, 0, 0, 116, 113, 1, 0, 0, 0, 116, 115, 1, 0, 0, 0, 117, 21, 1,
-		0, 0, 0, 8, 34, 45, 47, 72, 88, 101, 111, 116,
+		4, 1, 23, 111, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
+		4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 1, 0, 1,
+		0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 33,
+		8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 44, 8,
+		1, 10, 1, 12, 1, 47, 9, 1, 1, 2, 1, 2, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
+		3, 1, 3, 1, 3, 1, 3, 1, 4, 1, 4, 1, 5, 1, 5, 1, 5, 1, 5, 1, 5, 1, 5, 1,
+		5, 1, 5, 1, 5, 3, 5, 71, 8, 5, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6,
+		1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 3, 6, 86, 8, 6, 1, 7, 1, 7, 1, 7, 1,
+		7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 3, 7, 99, 8, 7, 1, 8, 1, 8,
+		1, 8, 1, 9, 1, 9, 1, 9, 1, 9, 1, 9, 3, 9, 109, 8, 9, 1, 9, 0, 1, 2, 10,
+		0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 0, 4, 1, 0, 14, 15, 1, 0, 12, 13, 1,
+		0, 12, 17, 1, 0, 21, 22, 114, 0, 20, 1, 0, 0, 0, 2, 32, 1, 0, 0, 0, 4,
+		48, 1, 0, 0, 0, 6, 50, 1, 0, 0, 0, 8, 59, 1, 0, 0, 0, 10, 70, 1, 0, 0,
+		0, 12, 85, 1, 0, 0, 0, 14, 98, 1, 0, 0, 0, 16, 100, 1, 0, 0, 0, 18, 108,
+		1, 0, 0, 0, 20, 21, 3, 2, 1, 0, 21, 22, 5, 17, 0, 0, 22, 23, 3, 2, 1, 0,
+		23, 1, 1, 0, 0, 0, 24, 25, 6, 1, -1, 0, 25, 26, 5, 5, 0, 0, 26, 27, 3,
+		2, 1, 0, 27, 28, 5, 6, 0, 0, 28, 33, 1, 0, 0, 0, 29, 33, 3, 8, 4, 0, 30,
+		33, 3, 10, 5, 0, 31, 33, 3, 6, 3, 0, 32, 24, 1, 0, 0, 0, 32, 29, 1, 0,
+		0, 0, 32, 30, 1, 0, 0, 0, 32, 31, 1, 0, 0, 0, 33, 45, 1, 0, 0, 0, 34, 35,
+		10, 6, 0, 0, 35, 36, 5, 16, 0, 0, 36, 44, 3, 2, 1, 6, 37, 38, 10, 5, 0,
+		0, 38, 39, 7, 0, 0, 0, 39, 44, 3, 2, 1, 6, 40, 41, 10, 4, 0, 0, 41, 42,
+		7, 1, 0, 0, 42, 44, 3, 2, 1, 5, 43, 34, 1, 0, 0, 0, 43, 37, 1, 0, 0, 0,
+		43, 40, 1, 0, 0, 0, 44, 47, 1, 0, 0, 0, 45, 43, 1, 0, 0, 0, 45, 46, 1,
+		0, 0, 0, 46, 3, 1, 0, 0, 0, 47, 45, 1, 0, 0, 0, 48, 49, 7, 2, 0, 0, 49,
+		5, 1, 0, 0, 0, 50, 51, 5, 11, 0, 0, 51, 52, 5, 1, 0, 0, 52, 53, 5, 7, 0,
+		0, 53, 54, 3, 2, 1, 0, 54, 55, 5, 8, 0, 0, 55, 56, 5, 7, 0, 0, 56, 57,
+		3, 2, 1, 0, 57, 58, 5, 8, 0, 0, 58, 7, 1, 0, 0, 0, 59, 60, 7, 3, 0, 0,
+		60, 9, 1, 0, 0, 0, 61, 62, 5, 18, 0, 0, 62, 63, 3, 12, 6, 0, 63, 64, 3,
+		14, 7, 0, 64, 71, 1, 0, 0, 0, 65, 66, 5, 11, 0, 0, 66, 67, 5, 18, 0, 0,
+		67, 68, 3, 12, 6, 0, 68, 69, 3, 14, 7, 0, 69, 71, 1, 0, 0, 0, 70, 61, 1,
+		0, 0, 0, 70, 65, 1, 0, 0, 0, 71, 11, 1, 0, 0, 0, 72, 73, 5, 9, 0, 0, 73,
+		74, 5, 7, 0, 0, 74, 75, 5, 18, 0, 0, 75, 86, 5, 8, 0, 0, 76, 77, 5, 9,
+		0, 0, 77, 78, 5, 7, 0, 0, 78, 79, 5, 21, 0, 0, 79, 86, 5, 8, 0, 0, 80,
+		81, 5, 9, 0, 0, 81, 86, 5, 18, 0, 0, 82, 83, 5, 9, 0, 0, 83, 86, 5, 21,
+		0, 0, 84, 86, 1, 0, 0, 0, 85, 72, 1, 0, 0, 0, 85, 76, 1, 0, 0, 0, 85, 80,
+		1, 0, 0, 0, 85, 82, 1, 0, 0, 0, 85, 84, 1, 0, 0, 0, 86, 13, 1, 0, 0, 0,
+		87, 88, 5, 5, 0, 0, 88, 89, 3, 16, 8, 0, 89, 90, 5, 6, 0, 0, 90, 99, 1,
+		0, 0, 0, 91, 92, 5, 5, 0, 0, 92, 93, 3, 16, 8, 0, 93, 94, 5, 4, 0, 0, 94,
+		95, 3, 16, 8, 0, 95, 96, 5, 6, 0, 0, 96, 99, 1, 0, 0, 0, 97, 99, 1, 0,
+		0, 0, 98, 87, 1, 0, 0, 0, 98, 91, 1, 0, 0, 0, 98, 97, 1, 0, 0, 0, 99, 15,
+		1, 0, 0, 0, 100, 101, 3, 2, 1, 0, 101, 102, 3, 18, 9, 0, 102, 17, 1, 0,
+		0, 0, 103, 104, 5, 2, 0, 0, 104, 105, 3, 2, 1, 0, 105, 106, 3, 18, 9, 0,
+		106, 109, 1, 0, 0, 0, 107, 109, 1, 0, 0, 0, 108, 103, 1, 0, 0, 0, 108,
+		107, 1, 0, 0, 0, 109, 19, 1, 0, 0, 0, 7, 32, 43, 45, 70, 85, 98, 108,
 	}
 	deserializer := antlr.NewATNDeserializer(nil)
 	staticData.atn = deserializer.Deserialize(staticData.serializedATN)
@@ -151,19 +146,17 @@ const (
 	FormulaParserDIV          = 15
 	FormulaParserPOW          = 16
 	FormulaParserEQUAL        = 17
-	FormulaParserSYMBOL       = 18
-	FormulaParserID           = 19
-	FormulaParserLINE_COMMENT = 20
-	FormulaParserCOMMENT      = 21
-	FormulaParserINTLIT       = 22
-	FormulaParserSINGLEINTLIT = 23
-	FormulaParserFLOATLIT     = 24
-	FormulaParserWS           = 25
+	FormulaParserID           = 18
+	FormulaParserLINE_COMMENT = 19
+	FormulaParserCOMMENT      = 20
+	FormulaParserINTLIT       = 21
+	FormulaParserFLOATLIT     = 22
+	FormulaParserWS           = 23
 )
 
 // FormulaParser rules.
 const (
-	FormulaParserRULE_program          = 0
+	FormulaParserRULE_equation         = 0
 	FormulaParserRULE_expr             = 1
 	FormulaParserRULE_binaryOperator   = 2
 	FormulaParserRULE_fraction         = 3
@@ -173,11 +166,10 @@ const (
 	FormulaParserRULE_argumentTail     = 7
 	FormulaParserRULE_argumentList     = 8
 	FormulaParserRULE_argumentListTail = 9
-	FormulaParserRULE_symbolList       = 10
 )
 
-// IProgramContext is an interface to support dynamic dispatch.
-type IProgramContext interface {
+// IEquationContext is an interface to support dynamic dispatch.
+type IEquationContext interface {
 	antlr.ParserRuleContext
 
 	// GetParser returns the parser.
@@ -188,43 +180,43 @@ type IProgramContext interface {
 	Expr(i int) IExprContext
 	EQUAL() antlr.TerminalNode
 
-	// IsProgramContext differentiates from other interfaces.
-	IsProgramContext()
+	// IsEquationContext differentiates from other interfaces.
+	IsEquationContext()
 }
 
-type ProgramContext struct {
+type EquationContext struct {
 	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
-func NewEmptyProgramContext() *ProgramContext {
-	var p = new(ProgramContext)
+func NewEmptyEquationContext() *EquationContext {
+	var p = new(EquationContext)
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = FormulaParserRULE_program
+	p.RuleIndex = FormulaParserRULE_equation
 	return p
 }
 
-func InitEmptyProgramContext(p *ProgramContext) {
+func InitEmptyEquationContext(p *EquationContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = FormulaParserRULE_program
+	p.RuleIndex = FormulaParserRULE_equation
 }
 
-func (*ProgramContext) IsProgramContext() {}
+func (*EquationContext) IsEquationContext() {}
 
-func NewProgramContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ProgramContext {
-	var p = new(ProgramContext)
+func NewEquationContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *EquationContext {
+	var p = new(EquationContext)
 
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
-	p.RuleIndex = FormulaParserRULE_program
+	p.RuleIndex = FormulaParserRULE_equation
 
 	return p
 }
 
-func (s *ProgramContext) GetParser() antlr.Parser { return s.parser }
+func (s *EquationContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *ProgramContext) AllExpr() []IExprContext {
+func (s *EquationContext) AllExpr() []IExprContext {
 	children := s.GetChildren()
 	len := 0
 	for _, ctx := range children {
@@ -245,7 +237,7 @@ func (s *ProgramContext) AllExpr() []IExprContext {
 	return tst
 }
 
-func (s *ProgramContext) Expr(i int) IExprContext {
+func (s *EquationContext) Expr(i int) IExprContext {
 	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
@@ -265,40 +257,40 @@ func (s *ProgramContext) Expr(i int) IExprContext {
 	return t.(IExprContext)
 }
 
-func (s *ProgramContext) EQUAL() antlr.TerminalNode {
+func (s *EquationContext) EQUAL() antlr.TerminalNode {
 	return s.GetToken(FormulaParserEQUAL, 0)
 }
 
-func (s *ProgramContext) GetRuleContext() antlr.RuleContext {
+func (s *EquationContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
 
-func (s *ProgramContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+func (s *EquationContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-func (s *ProgramContext) EnterRule(listener antlr.ParseTreeListener) {
+func (s *EquationContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(FormulaListener); ok {
-		listenerT.EnterProgram(s)
+		listenerT.EnterEquation(s)
 	}
 }
 
-func (s *ProgramContext) ExitRule(listener antlr.ParseTreeListener) {
+func (s *EquationContext) ExitRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(FormulaListener); ok {
-		listenerT.ExitProgram(s)
+		listenerT.ExitEquation(s)
 	}
 }
 
-func (p *FormulaParser) Program() (localctx IProgramContext) {
-	localctx = NewProgramContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 0, FormulaParserRULE_program)
+func (p *FormulaParser) Equation() (localctx IEquationContext) {
+	localctx = NewEquationContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 0, FormulaParserRULE_equation)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(22)
+		p.SetState(20)
 		p.expr(0)
 	}
 	{
-		p.SetState(23)
+		p.SetState(21)
 		p.Match(FormulaParserEQUAL)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -306,7 +298,7 @@ func (p *FormulaParser) Program() (localctx IProgramContext) {
 		}
 	}
 	{
-		p.SetState(24)
+		p.SetState(22)
 		p.expr(0)
 	}
 
@@ -535,7 +527,7 @@ func (p *FormulaParser) expr(_p int) (localctx IExprContext) {
 	var _alt int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(34)
+	p.SetState(32)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -544,7 +536,7 @@ func (p *FormulaParser) expr(_p int) (localctx IExprContext) {
 	switch p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 0, p.GetParserRuleContext()) {
 	case 1:
 		{
-			p.SetState(27)
+			p.SetState(25)
 			p.Match(FormulaParserOPENPAREN)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -552,11 +544,11 @@ func (p *FormulaParser) expr(_p int) (localctx IExprContext) {
 			}
 		}
 		{
-			p.SetState(28)
+			p.SetState(26)
 			p.expr(0)
 		}
 		{
-			p.SetState(29)
+			p.SetState(27)
 			p.Match(FormulaParserCLOSEPAREN)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -566,19 +558,19 @@ func (p *FormulaParser) expr(_p int) (localctx IExprContext) {
 
 	case 2:
 		{
-			p.SetState(31)
+			p.SetState(29)
 			p.Constant()
 		}
 
 	case 3:
 		{
-			p.SetState(32)
+			p.SetState(30)
 			p.Variable()
 		}
 
 	case 4:
 		{
-			p.SetState(33)
+			p.SetState(31)
 			p.Fraction()
 		}
 
@@ -586,7 +578,7 @@ func (p *FormulaParser) expr(_p int) (localctx IExprContext) {
 		goto errorExit
 	}
 	p.GetParserRuleContext().SetStop(p.GetTokenStream().LT(-1))
-	p.SetState(47)
+	p.SetState(45)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -601,7 +593,7 @@ func (p *FormulaParser) expr(_p int) (localctx IExprContext) {
 				p.TriggerExitRuleEvent()
 			}
 			_prevctx = localctx
-			p.SetState(45)
+			p.SetState(43)
 			p.GetErrorHandler().Sync(p)
 			if p.HasError() {
 				goto errorExit
@@ -611,14 +603,14 @@ func (p *FormulaParser) expr(_p int) (localctx IExprContext) {
 			case 1:
 				localctx = NewExprContext(p, _parentctx, _parentState)
 				p.PushNewRecursionContext(localctx, _startState, FormulaParserRULE_expr)
-				p.SetState(36)
+				p.SetState(34)
 
 				if !(p.Precpred(p.GetParserRuleContext(), 6)) {
 					p.SetError(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 6)", ""))
 					goto errorExit
 				}
 				{
-					p.SetState(37)
+					p.SetState(35)
 					p.Match(FormulaParserPOW)
 					if p.HasError() {
 						// Recognition error - abort rule
@@ -626,21 +618,21 @@ func (p *FormulaParser) expr(_p int) (localctx IExprContext) {
 					}
 				}
 				{
-					p.SetState(38)
+					p.SetState(36)
 					p.expr(6)
 				}
 
 			case 2:
 				localctx = NewExprContext(p, _parentctx, _parentState)
 				p.PushNewRecursionContext(localctx, _startState, FormulaParserRULE_expr)
-				p.SetState(39)
+				p.SetState(37)
 
 				if !(p.Precpred(p.GetParserRuleContext(), 5)) {
 					p.SetError(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 5)", ""))
 					goto errorExit
 				}
 				{
-					p.SetState(40)
+					p.SetState(38)
 					_la = p.GetTokenStream().LA(1)
 
 					if !(_la == FormulaParserMULT || _la == FormulaParserDIV) {
@@ -651,21 +643,21 @@ func (p *FormulaParser) expr(_p int) (localctx IExprContext) {
 					}
 				}
 				{
-					p.SetState(41)
+					p.SetState(39)
 					p.expr(6)
 				}
 
 			case 3:
 				localctx = NewExprContext(p, _parentctx, _parentState)
 				p.PushNewRecursionContext(localctx, _startState, FormulaParserRULE_expr)
-				p.SetState(42)
+				p.SetState(40)
 
 				if !(p.Precpred(p.GetParserRuleContext(), 4)) {
 					p.SetError(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 4)", ""))
 					goto errorExit
 				}
 				{
-					p.SetState(43)
+					p.SetState(41)
 					_la = p.GetTokenStream().LA(1)
 
 					if !(_la == FormulaParserPLUS || _la == FormulaParserMINUS) {
@@ -676,7 +668,7 @@ func (p *FormulaParser) expr(_p int) (localctx IExprContext) {
 					}
 				}
 				{
-					p.SetState(44)
+					p.SetState(42)
 					p.expr(5)
 				}
 
@@ -685,7 +677,7 @@ func (p *FormulaParser) expr(_p int) (localctx IExprContext) {
 			}
 
 		}
-		p.SetState(49)
+		p.SetState(47)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -811,7 +803,7 @@ func (p *FormulaParser) BinaryOperator() (localctx IBinaryOperatorContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(50)
+		p.SetState(48)
 		_la = p.GetTokenStream().LA(1)
 
 		if !((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&258048) != 0) {
@@ -973,7 +965,7 @@ func (p *FormulaParser) Fraction() (localctx IFractionContext) {
 	p.EnterRule(localctx, 6, FormulaParserRULE_fraction)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(52)
+		p.SetState(50)
 		p.Match(FormulaParserBACKSLASH)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -981,7 +973,7 @@ func (p *FormulaParser) Fraction() (localctx IFractionContext) {
 		}
 	}
 	{
-		p.SetState(53)
+		p.SetState(51)
 		p.Match(FormulaParserT__0)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -989,7 +981,7 @@ func (p *FormulaParser) Fraction() (localctx IFractionContext) {
 		}
 	}
 	{
-		p.SetState(54)
+		p.SetState(52)
 		p.Match(FormulaParserOPENCURLY)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -997,11 +989,11 @@ func (p *FormulaParser) Fraction() (localctx IFractionContext) {
 		}
 	}
 	{
-		p.SetState(55)
+		p.SetState(53)
 		p.expr(0)
 	}
 	{
-		p.SetState(56)
+		p.SetState(54)
 		p.Match(FormulaParserCLOSECURLY)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -1009,7 +1001,7 @@ func (p *FormulaParser) Fraction() (localctx IFractionContext) {
 		}
 	}
 	{
-		p.SetState(57)
+		p.SetState(55)
 		p.Match(FormulaParserOPENCURLY)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -1017,11 +1009,11 @@ func (p *FormulaParser) Fraction() (localctx IFractionContext) {
 		}
 	}
 	{
-		p.SetState(58)
+		p.SetState(56)
 		p.expr(0)
 	}
 	{
-		p.SetState(59)
+		p.SetState(57)
 		p.Match(FormulaParserCLOSECURLY)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -1124,7 +1116,7 @@ func (p *FormulaParser) Constant() (localctx IConstantContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(61)
+		p.SetState(59)
 		_la = p.GetTokenStream().LA(1)
 
 		if !(_la == FormulaParserINTLIT || _la == FormulaParserFLOATLIT) {
@@ -1260,7 +1252,7 @@ func (s *VariableContext) ExitRule(listener antlr.ParseTreeListener) {
 func (p *FormulaParser) Variable() (localctx IVariableContext) {
 	localctx = NewVariableContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 10, FormulaParserRULE_variable)
-	p.SetState(72)
+	p.SetState(70)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -1270,7 +1262,7 @@ func (p *FormulaParser) Variable() (localctx IVariableContext) {
 	case FormulaParserID:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(63)
+			p.SetState(61)
 			p.Match(FormulaParserID)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1278,18 +1270,18 @@ func (p *FormulaParser) Variable() (localctx IVariableContext) {
 			}
 		}
 		{
-			p.SetState(64)
+			p.SetState(62)
 			p.SubscriptTail()
 		}
 		{
-			p.SetState(65)
+			p.SetState(63)
 			p.ArgumentTail()
 		}
 
 	case FormulaParserBACKSLASH:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(67)
+			p.SetState(65)
 			p.Match(FormulaParserBACKSLASH)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1297,7 +1289,7 @@ func (p *FormulaParser) Variable() (localctx IVariableContext) {
 			}
 		}
 		{
-			p.SetState(68)
+			p.SetState(66)
 			p.Match(FormulaParserID)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1305,11 +1297,11 @@ func (p *FormulaParser) Variable() (localctx IVariableContext) {
 			}
 		}
 		{
-			p.SetState(69)
+			p.SetState(67)
 			p.SubscriptTail()
 		}
 		{
-			p.SetState(70)
+			p.SetState(68)
 			p.ArgumentTail()
 		}
 
@@ -1341,11 +1333,9 @@ type ISubscriptTailContext interface {
 	// Getter signatures
 	SUBSCRIPT() antlr.TerminalNode
 	OPENCURLY() antlr.TerminalNode
-	SymbolList() ISymbolListContext
+	ID() antlr.TerminalNode
 	CLOSECURLY() antlr.TerminalNode
 	INTLIT() antlr.TerminalNode
-	SYMBOL() antlr.TerminalNode
-	SINGLEINTLIT() antlr.TerminalNode
 
 	// IsSubscriptTailContext differentiates from other interfaces.
 	IsSubscriptTailContext()
@@ -1391,20 +1381,8 @@ func (s *SubscriptTailContext) OPENCURLY() antlr.TerminalNode {
 	return s.GetToken(FormulaParserOPENCURLY, 0)
 }
 
-func (s *SubscriptTailContext) SymbolList() ISymbolListContext {
-	var t antlr.RuleContext
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(ISymbolListContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(ISymbolListContext)
+func (s *SubscriptTailContext) ID() antlr.TerminalNode {
+	return s.GetToken(FormulaParserID, 0)
 }
 
 func (s *SubscriptTailContext) CLOSECURLY() antlr.TerminalNode {
@@ -1413,14 +1391,6 @@ func (s *SubscriptTailContext) CLOSECURLY() antlr.TerminalNode {
 
 func (s *SubscriptTailContext) INTLIT() antlr.TerminalNode {
 	return s.GetToken(FormulaParserINTLIT, 0)
-}
-
-func (s *SubscriptTailContext) SYMBOL() antlr.TerminalNode {
-	return s.GetToken(FormulaParserSYMBOL, 0)
-}
-
-func (s *SubscriptTailContext) SINGLEINTLIT() antlr.TerminalNode {
-	return s.GetToken(FormulaParserSINGLEINTLIT, 0)
 }
 
 func (s *SubscriptTailContext) GetRuleContext() antlr.RuleContext {
@@ -1446,7 +1416,7 @@ func (s *SubscriptTailContext) ExitRule(listener antlr.ParseTreeListener) {
 func (p *FormulaParser) SubscriptTail() (localctx ISubscriptTailContext) {
 	localctx = NewSubscriptTailContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 12, FormulaParserRULE_subscriptTail)
-	p.SetState(88)
+	p.SetState(85)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -1456,7 +1426,7 @@ func (p *FormulaParser) SubscriptTail() (localctx ISubscriptTailContext) {
 	case 1:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(74)
+			p.SetState(72)
 			p.Match(FormulaParserSUBSCRIPT)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1464,7 +1434,7 @@ func (p *FormulaParser) SubscriptTail() (localctx ISubscriptTailContext) {
 			}
 		}
 		{
-			p.SetState(75)
+			p.SetState(73)
 			p.Match(FormulaParserOPENCURLY)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1472,11 +1442,15 @@ func (p *FormulaParser) SubscriptTail() (localctx ISubscriptTailContext) {
 			}
 		}
 		{
-			p.SetState(76)
-			p.SymbolList()
+			p.SetState(74)
+			p.Match(FormulaParserID)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
-			p.SetState(77)
+			p.SetState(75)
 			p.Match(FormulaParserCLOSECURLY)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1487,7 +1461,7 @@ func (p *FormulaParser) SubscriptTail() (localctx ISubscriptTailContext) {
 	case 2:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(79)
+			p.SetState(76)
 			p.Match(FormulaParserSUBSCRIPT)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1495,7 +1469,7 @@ func (p *FormulaParser) SubscriptTail() (localctx ISubscriptTailContext) {
 			}
 		}
 		{
-			p.SetState(80)
+			p.SetState(77)
 			p.Match(FormulaParserOPENCURLY)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1503,7 +1477,7 @@ func (p *FormulaParser) SubscriptTail() (localctx ISubscriptTailContext) {
 			}
 		}
 		{
-			p.SetState(81)
+			p.SetState(78)
 			p.Match(FormulaParserINTLIT)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1511,7 +1485,7 @@ func (p *FormulaParser) SubscriptTail() (localctx ISubscriptTailContext) {
 			}
 		}
 		{
-			p.SetState(82)
+			p.SetState(79)
 			p.Match(FormulaParserCLOSECURLY)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1522,7 +1496,7 @@ func (p *FormulaParser) SubscriptTail() (localctx ISubscriptTailContext) {
 	case 3:
 		p.EnterOuterAlt(localctx, 3)
 		{
-			p.SetState(83)
+			p.SetState(80)
 			p.Match(FormulaParserSUBSCRIPT)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1530,8 +1504,8 @@ func (p *FormulaParser) SubscriptTail() (localctx ISubscriptTailContext) {
 			}
 		}
 		{
-			p.SetState(84)
-			p.Match(FormulaParserSYMBOL)
+			p.SetState(81)
+			p.Match(FormulaParserID)
 			if p.HasError() {
 				// Recognition error - abort rule
 				goto errorExit
@@ -1541,7 +1515,7 @@ func (p *FormulaParser) SubscriptTail() (localctx ISubscriptTailContext) {
 	case 4:
 		p.EnterOuterAlt(localctx, 4)
 		{
-			p.SetState(85)
+			p.SetState(82)
 			p.Match(FormulaParserSUBSCRIPT)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1549,8 +1523,8 @@ func (p *FormulaParser) SubscriptTail() (localctx ISubscriptTailContext) {
 			}
 		}
 		{
-			p.SetState(86)
-			p.Match(FormulaParserSINGLEINTLIT)
+			p.SetState(83)
+			p.Match(FormulaParserINTLIT)
 			if p.HasError() {
 				// Recognition error - abort rule
 				goto errorExit
@@ -1703,7 +1677,7 @@ func (s *ArgumentTailContext) ExitRule(listener antlr.ParseTreeListener) {
 func (p *FormulaParser) ArgumentTail() (localctx IArgumentTailContext) {
 	localctx = NewArgumentTailContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 14, FormulaParserRULE_argumentTail)
-	p.SetState(101)
+	p.SetState(98)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -1713,7 +1687,7 @@ func (p *FormulaParser) ArgumentTail() (localctx IArgumentTailContext) {
 	case 1:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(90)
+			p.SetState(87)
 			p.Match(FormulaParserOPENPAREN)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1721,11 +1695,11 @@ func (p *FormulaParser) ArgumentTail() (localctx IArgumentTailContext) {
 			}
 		}
 		{
-			p.SetState(91)
+			p.SetState(88)
 			p.ArgumentList()
 		}
 		{
-			p.SetState(92)
+			p.SetState(89)
 			p.Match(FormulaParserCLOSEPAREN)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1736,7 +1710,7 @@ func (p *FormulaParser) ArgumentTail() (localctx IArgumentTailContext) {
 	case 2:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(94)
+			p.SetState(91)
 			p.Match(FormulaParserOPENPAREN)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1744,11 +1718,11 @@ func (p *FormulaParser) ArgumentTail() (localctx IArgumentTailContext) {
 			}
 		}
 		{
-			p.SetState(95)
+			p.SetState(92)
 			p.ArgumentList()
 		}
 		{
-			p.SetState(96)
+			p.SetState(93)
 			p.Match(FormulaParserSEMICOLON)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1756,11 +1730,11 @@ func (p *FormulaParser) ArgumentTail() (localctx IArgumentTailContext) {
 			}
 		}
 		{
-			p.SetState(97)
+			p.SetState(94)
 			p.ArgumentList()
 		}
 		{
-			p.SetState(98)
+			p.SetState(95)
 			p.Match(FormulaParserCLOSEPAREN)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1892,11 +1866,11 @@ func (p *FormulaParser) ArgumentList() (localctx IArgumentListContext) {
 	p.EnterRule(localctx, 16, FormulaParserRULE_argumentList)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(103)
+		p.SetState(100)
 		p.expr(0)
 	}
 	{
-		p.SetState(104)
+		p.SetState(101)
 		p.ArgumentListTail()
 	}
 
@@ -2020,7 +1994,7 @@ func (s *ArgumentListTailContext) ExitRule(listener antlr.ParseTreeListener) {
 func (p *FormulaParser) ArgumentListTail() (localctx IArgumentListTailContext) {
 	localctx = NewArgumentListTailContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 18, FormulaParserRULE_argumentListTail)
-	p.SetState(111)
+	p.SetState(108)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -2030,7 +2004,7 @@ func (p *FormulaParser) ArgumentListTail() (localctx IArgumentListTailContext) {
 	case FormulaParserCOMMA:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(106)
+			p.SetState(103)
 			p.Match(FormulaParserCOMMA)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2038,148 +2012,15 @@ func (p *FormulaParser) ArgumentListTail() (localctx IArgumentListTailContext) {
 			}
 		}
 		{
-			p.SetState(107)
+			p.SetState(104)
 			p.expr(0)
 		}
 		{
-			p.SetState(108)
+			p.SetState(105)
 			p.ArgumentListTail()
 		}
 
 	case FormulaParserSEMICOLON, FormulaParserCLOSEPAREN:
-		p.EnterOuterAlt(localctx, 2)
-
-	default:
-		p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
-		goto errorExit
-	}
-
-errorExit:
-	if p.HasError() {
-		v := p.GetError()
-		localctx.SetException(v)
-		p.GetErrorHandler().ReportError(p, v)
-		p.GetErrorHandler().Recover(p, v)
-		p.SetError(nil)
-	}
-	p.ExitRule()
-	return localctx
-	goto errorExit // Trick to prevent compiler error if the label is not used
-}
-
-// ISymbolListContext is an interface to support dynamic dispatch.
-type ISymbolListContext interface {
-	antlr.ParserRuleContext
-
-	// GetParser returns the parser.
-	GetParser() antlr.Parser
-
-	// Getter signatures
-	SYMBOL() antlr.TerminalNode
-	SymbolList() ISymbolListContext
-
-	// IsSymbolListContext differentiates from other interfaces.
-	IsSymbolListContext()
-}
-
-type SymbolListContext struct {
-	antlr.BaseParserRuleContext
-	parser antlr.Parser
-}
-
-func NewEmptySymbolListContext() *SymbolListContext {
-	var p = new(SymbolListContext)
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = FormulaParserRULE_symbolList
-	return p
-}
-
-func InitEmptySymbolListContext(p *SymbolListContext) {
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = FormulaParserRULE_symbolList
-}
-
-func (*SymbolListContext) IsSymbolListContext() {}
-
-func NewSymbolListContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *SymbolListContext {
-	var p = new(SymbolListContext)
-
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
-
-	p.parser = parser
-	p.RuleIndex = FormulaParserRULE_symbolList
-
-	return p
-}
-
-func (s *SymbolListContext) GetParser() antlr.Parser { return s.parser }
-
-func (s *SymbolListContext) SYMBOL() antlr.TerminalNode {
-	return s.GetToken(FormulaParserSYMBOL, 0)
-}
-
-func (s *SymbolListContext) SymbolList() ISymbolListContext {
-	var t antlr.RuleContext
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(ISymbolListContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(ISymbolListContext)
-}
-
-func (s *SymbolListContext) GetRuleContext() antlr.RuleContext {
-	return s
-}
-
-func (s *SymbolListContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
-	return antlr.TreesStringTree(s, ruleNames, recog)
-}
-
-func (s *SymbolListContext) EnterRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(FormulaListener); ok {
-		listenerT.EnterSymbolList(s)
-	}
-}
-
-func (s *SymbolListContext) ExitRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(FormulaListener); ok {
-		listenerT.ExitSymbolList(s)
-	}
-}
-
-func (p *FormulaParser) SymbolList() (localctx ISymbolListContext) {
-	localctx = NewSymbolListContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 20, FormulaParserRULE_symbolList)
-	p.SetState(116)
-	p.GetErrorHandler().Sync(p)
-	if p.HasError() {
-		goto errorExit
-	}
-
-	switch p.GetTokenStream().LA(1) {
-	case FormulaParserSYMBOL:
-		p.EnterOuterAlt(localctx, 1)
-		{
-			p.SetState(113)
-			p.Match(FormulaParserSYMBOL)
-			if p.HasError() {
-				// Recognition error - abort rule
-				goto errorExit
-			}
-		}
-		{
-			p.SetState(114)
-			p.SymbolList()
-		}
-
-	case FormulaParserCLOSECURLY:
 		p.EnterOuterAlt(localctx, 2)
 
 	default:

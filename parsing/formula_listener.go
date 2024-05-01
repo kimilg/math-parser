@@ -1,14 +1,14 @@
 // Code generated from Formula.g4 by ANTLR 4.13.1. DO NOT EDIT.
 
-package parsing // Formula
+package parser // Formula
 import "github.com/antlr4-go/antlr/v4"
 
 // FormulaListener is a complete listener for a parse tree produced by FormulaParser.
 type FormulaListener interface {
 	antlr.ParseTreeListener
 
-	// EnterProgram is called when entering the program production.
-	EnterProgram(c *ProgramContext)
+	// EnterEquation is called when entering the equation production.
+	EnterEquation(c *EquationContext)
 
 	// EnterExpr is called when entering the expr production.
 	EnterExpr(c *ExprContext)
@@ -37,11 +37,8 @@ type FormulaListener interface {
 	// EnterArgumentListTail is called when entering the argumentListTail production.
 	EnterArgumentListTail(c *ArgumentListTailContext)
 
-	// EnterSymbolList is called when entering the symbolList production.
-	EnterSymbolList(c *SymbolListContext)
-
-	// ExitProgram is called when exiting the program production.
-	ExitProgram(c *ProgramContext)
+	// ExitEquation is called when exiting the equation production.
+	ExitEquation(c *EquationContext)
 
 	// ExitExpr is called when exiting the expr production.
 	ExitExpr(c *ExprContext)
@@ -69,7 +66,4 @@ type FormulaListener interface {
 
 	// ExitArgumentListTail is called when exiting the argumentListTail production.
 	ExitArgumentListTail(c *ArgumentListTailContext)
-
-	// ExitSymbolList is called when exiting the symbolList production.
-	ExitSymbolList(c *SymbolListContext)
 }

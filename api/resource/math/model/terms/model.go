@@ -2,7 +2,7 @@ package terms
 
 import (
 	"gorm.io/gorm"
-	"math-parser/api/resource/math/mathobj"
+	"math-parser/api/resource/math/model/mathobj"
 )
 
 type Terms struct {

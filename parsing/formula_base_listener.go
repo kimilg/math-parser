@@ -1,6 +1,6 @@
 // Code generated from Formula.g4 by ANTLR 4.13.1. DO NOT EDIT.
 
-package parsing // Formula
+package parser // Formula
 import "github.com/antlr4-go/antlr/v4"
 
 // BaseFormulaListener is a complete listener for a parse tree produced by FormulaParser.
@@ -20,11 +20,11 @@ func (s *BaseFormulaListener) EnterEveryRule(ctx antlr.ParserRuleContext) {}
 // ExitEveryRule is called when any rule is exited.
 func (s *BaseFormulaListener) ExitEveryRule(ctx antlr.ParserRuleContext) {}
 
-// EnterProgram is called when production program is entered.
-func (s *BaseFormulaListener) EnterProgram(ctx *ProgramContext) {}
+// EnterEquation is called when production equation is entered.
+func (s *BaseFormulaListener) EnterEquation(ctx *EquationContext) {}
 
-// ExitProgram is called when production program is exited.
-func (s *BaseFormulaListener) ExitProgram(ctx *ProgramContext) {}
+// ExitEquation is called when production equation is exited.
+func (s *BaseFormulaListener) ExitEquation(ctx *EquationContext) {}
 
 // EnterExpr is called when production expr is entered.
 func (s *BaseFormulaListener) EnterExpr(ctx *ExprContext) {}
@@ -79,9 +79,3 @@ func (s *BaseFormulaListener) EnterArgumentListTail(ctx *ArgumentListTailContext
 
 // ExitArgumentListTail is called when production argumentListTail is exited.
 func (s *BaseFormulaListener) ExitArgumentListTail(ctx *ArgumentListTailContext) {}
-
-// EnterSymbolList is called when production symbolList is entered.
-func (s *BaseFormulaListener) EnterSymbolList(ctx *SymbolListContext) {}
-
-// ExitSymbolList is called when production symbolList is exited.
-func (s *BaseFormulaListener) ExitSymbolList(ctx *SymbolListContext) {}

@@ -2,7 +2,7 @@ package variable
 
 import (
 	"gorm.io/gorm"
-	"math-parser/api/resource/math/mathobj"
+	"math-parser/api/resource/math/model/mathobj"
 )
 
 type Variable struct {

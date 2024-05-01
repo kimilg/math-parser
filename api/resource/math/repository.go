@@ -2,7 +2,7 @@ package math
 
 import (
 	"gorm.io/gorm"
-	"math-parser/api/resource/math/classification"
+	"math-parser/api/resource/math/model/classification"
 )
 
 type Repository struct {

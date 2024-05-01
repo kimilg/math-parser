@@ -2,9 +2,13 @@ package math
 
 import (
 	"encoding/json"
-	"math-parser/api/resource/math/constant"
-	"math-parser/api/resource/math/variable"
+	"github.com/antlr4-go/antlr/v4"
+	"math-parser/api/resource/math/model/constant"
+	"math-parser/api/resource/math/model/variable"
+	"math-parser/api/resource/math/parser/listener"
+	"math-parser/parsing"
 	"net/http"
+	"strings"
 )
 
 type API struct {
@@ -21,10 +25,23 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	
-	//equation := form.Equation
+
 	//apply grammar to parse after removing space.
+	equation := strings.TrimSpace(form.Equation)
 	
+	is := antlr.NewInputStream(equation)
+	
+	lexer := parser.NewFormulaLexer(is)
+	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
+	//for _,token := range lexer.GetAllTokens() {
+	//	println(token.GetText())
+	//}
+	
+	p := parser.NewFormulaParser(stream)
+	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+	
+	var formulaListener listener.FormulaTreeListener
+	antlr.ParseTreeWalkerDefault.Walk(&formulaListener, p.Equation())
 	
 	
 	println("***");

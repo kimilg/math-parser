@@ -2,8 +2,8 @@ package classification
 
 import (
 	"gorm.io/gorm"
-	"math-parser/api/resource/math/constant"
-	"math-parser/api/resource/math/variable"
+	"math-parser/api/resource/math/model/constant"
+	"math-parser/api/resource/math/model/variable"
 )
 
 type Classification struct {

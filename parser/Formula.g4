@@ -1,6 +1,6 @@
 grammar Formula;
 
-program: expr EQUAL expr;
+equation: expr EQUAL expr;
 
 expr: OPENPAREN expr CLOSEPAREN
     | <assoc=right>expr POW expr
@@ -15,13 +15,11 @@ fraction: BACKSLASH 'frac' OPENCURLY expr CLOSECURLY OPENCURLY expr CLOSECURLY;
 constant: INTLIT | FLOATLIT;
 
 variable: ID subscriptTail argumentTail | BACKSLASH ID subscriptTail argumentTail ;
-subscriptTail: SUBSCRIPT OPENCURLY symbolList CLOSECURLY | SUBSCRIPT OPENCURLY INTLIT CLOSECURLY | SUBSCRIPT SYMBOL | SUBSCRIPT SINGLEINTLIT | ;
+subscriptTail: SUBSCRIPT OPENCURLY ID CLOSECURLY | SUBSCRIPT OPENCURLY INTLIT CLOSECURLY | SUBSCRIPT ID | SUBSCRIPT INTLIT | ;
 argumentTail: OPENPAREN argumentList CLOSEPAREN | OPENPAREN argumentList SEMICOLON argumentList CLOSEPAREN | ;
 
 argumentList: expr argumentListTail;
 argumentListTail: COMMA expr argumentListTail | ;
-
-symbolList: SYMBOL symbolList | ;
 
 
 COMMA: ',';
@@ -42,11 +40,10 @@ DIV: '/';
 POW: '**';
 EQUAL: '=';
 
-SYMBOL: [a-z|A-Z];
+
 ID: [a-z|A-Z]+;
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 COMMENT: '/*' .*? '*/' -> skip;
 INTLIT: [0]|[1-9][0-9]*;
-SINGLEINTLIT: [0-9];
 FLOATLIT: INTLIT'.'[0-9]*;
 WS: [ \t\r\n]+ -> skip;
