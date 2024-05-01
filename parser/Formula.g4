@@ -10,11 +10,11 @@ expr: OPENPAREN expr CLOSEPAREN
     
 binaryOperator: PLUS | MINUS | MULT | DIV | POW | EQUAL ; 
 
-fraction: BACKSLASH 'frac' OPENCURLY expr CLOSECURLY OPENCURLY expr CLOSECURLY;
+fraction: '\\frac' OPENCURLY expr CLOSECURLY OPENCURLY expr CLOSECURLY;
 
 constant: generalIntLit | FLOATLIT;
 
-variable: generalId subscriptTail argumentTail | BACKSLASH generalId subscriptTail argumentTail ;
+variable: generalId subscriptTail argumentTail;
 subscriptTail: SUBSCRIPT OPENCURLY generalId CLOSECURLY | SUBSCRIPT OPENCURLY generalIntLit CLOSECURLY | SUBSCRIPT SINGLEID | SUBSCRIPT SINGLEINTLIT | ;
 argumentTail: OPENPAREN argumentList CLOSEPAREN | OPENPAREN argumentList SEMICOLON argumentList CLOSEPAREN | ;
 
@@ -43,7 +43,7 @@ POW: '**';
 EQUAL: '=';
 
 SINGLEID: [a-z|A-Z];
-ID: [a-z|A-Z][a-z|A-Z]+;
+ID: BACKSLASH [a-z|A-Z]+ | [a-z|A-Z][a-z|A-Z]+;
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 COMMENT: '/*' .*? '*/' -> skip;
 

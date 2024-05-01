@@ -33,9 +33,6 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 	
 	lexer := parser.NewFormulaLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
-	//for _,token := range lexer.GetAllTokens() {
-	//	println(token.GetText())
-	//}
 	
 	p := parser.NewFormulaParser(stream)
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
