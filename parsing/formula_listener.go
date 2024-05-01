@@ -37,6 +37,12 @@ type FormulaListener interface {
 	// EnterArgumentListTail is called when entering the argumentListTail production.
 	EnterArgumentListTail(c *ArgumentListTailContext)
 
+	// EnterGeneralId is called when entering the generalId production.
+	EnterGeneralId(c *GeneralIdContext)
+
+	// EnterGeneralIntLit is called when entering the generalIntLit production.
+	EnterGeneralIntLit(c *GeneralIntLitContext)
+
 	// ExitEquation is called when exiting the equation production.
 	ExitEquation(c *EquationContext)
 
@@ -66,4 +72,10 @@ type FormulaListener interface {
 
 	// ExitArgumentListTail is called when exiting the argumentListTail production.
 	ExitArgumentListTail(c *ArgumentListTailContext)
+
+	// ExitGeneralId is called when exiting the generalId production.
+	ExitGeneralId(c *GeneralIdContext)
+
+	// ExitGeneralIntLit is called when exiting the generalIntLit production.
+	ExitGeneralIntLit(c *GeneralIntLitContext)
 }

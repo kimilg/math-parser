@@ -12,15 +12,17 @@ binaryOperator: PLUS | MINUS | MULT | DIV | POW | EQUAL ;
 
 fraction: BACKSLASH 'frac' OPENCURLY expr CLOSECURLY OPENCURLY expr CLOSECURLY;
 
-constant: INTLIT | FLOATLIT;
+constant: generalIntLit | FLOATLIT;
 
-variable: ID subscriptTail argumentTail | BACKSLASH ID subscriptTail argumentTail ;
-subscriptTail: SUBSCRIPT OPENCURLY ID CLOSECURLY | SUBSCRIPT OPENCURLY INTLIT CLOSECURLY | SUBSCRIPT ID | SUBSCRIPT INTLIT | ;
+variable: generalId subscriptTail argumentTail | BACKSLASH generalId subscriptTail argumentTail ;
+subscriptTail: SUBSCRIPT OPENCURLY generalId CLOSECURLY | SUBSCRIPT OPENCURLY generalIntLit CLOSECURLY | SUBSCRIPT SINGLEID | SUBSCRIPT SINGLEINTLIT | ;
 argumentTail: OPENPAREN argumentList CLOSEPAREN | OPENPAREN argumentList SEMICOLON argumentList CLOSEPAREN | ;
 
 argumentList: expr argumentListTail;
 argumentListTail: COMMA expr argumentListTail | ;
 
+generalId: SINGLEID | ID;
+generalIntLit: SINGLEINTLIT | INTLIT;
 
 COMMA: ',';
 DOT: '.';
@@ -40,10 +42,12 @@ DIV: '/';
 POW: '**';
 EQUAL: '=';
 
-
-ID: [a-z|A-Z]+;
+SINGLEID: [a-z|A-Z];
+ID: [a-z|A-Z][a-z|A-Z]+;
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 COMMENT: '/*' .*? '*/' -> skip;
-INTLIT: [0]|[1-9][0-9]*;
+
+SINGLEINTLIT: [0-9];
+INTLIT: [1-9][0-9]+;
 FLOATLIT: INTLIT'.'[0-9]*;
 WS: [ \t\r\n]+ -> skip;

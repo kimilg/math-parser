@@ -20,3 +20,7 @@ func (l *FormulaTreeListener) EnterVariable(ctx *parser.VariableContext) {
 func (l *FormulaTreeListener) EnterConstant(ctx *parser.ConstantContext) {
 	println(ctx.GetText())
 }
+
+func (l *FormulaTreeListener) EnterGeneralId(ctx *parser.GeneralIdContext) {
+	println(ctx.GetText())
+}

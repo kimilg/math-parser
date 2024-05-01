@@ -79,3 +79,15 @@ func (s *BaseFormulaListener) EnterArgumentListTail(ctx *ArgumentListTailContext
 
 // ExitArgumentListTail is called when production argumentListTail is exited.
 func (s *BaseFormulaListener) ExitArgumentListTail(ctx *ArgumentListTailContext) {}
+
+// EnterGeneralId is called when production generalId is entered.
+func (s *BaseFormulaListener) EnterGeneralId(ctx *GeneralIdContext) {}
+
+// ExitGeneralId is called when production generalId is exited.
+func (s *BaseFormulaListener) ExitGeneralId(ctx *GeneralIdContext) {}
+
+// EnterGeneralIntLit is called when production generalIntLit is entered.
+func (s *BaseFormulaListener) EnterGeneralIntLit(ctx *GeneralIntLitContext) {}
+
+// ExitGeneralIntLit is called when production generalIntLit is exited.
+func (s *BaseFormulaListener) ExitGeneralIntLit(ctx *GeneralIntLitContext) {}
