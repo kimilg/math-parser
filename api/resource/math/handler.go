@@ -5,7 +5,7 @@ import (
 	"github.com/antlr4-go/antlr/v4"
 	"math-parser/api/resource/math/model/constant"
 	"math-parser/api/resource/math/model/variable"
-	"math-parser/api/resource/math/parser/listener"
+	"math-parser/api/resource/math/parser/visitor"
 	"math-parser/parsing"
 	"net/http"
 	"strings"
@@ -36,9 +36,12 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 	
 	p := parser.NewFormulaParser(stream)
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
-	
-	var formulaListener listener.FormulaTreeListener
-	antlr.ParseTreeWalkerDefault.Walk(&formulaListener, p.Equation())
+
+	//var formulaListener listener.FormulaTreeListener
+	//antlr.ParseTreeWalkerDefault.Walk(&formulaListener, p.Equation())
+
+	var formulaVisitor visitor.FormulaVisitorImpl
+	formulaVisitor.Visit(p.Equation())
 	
 	
 	println("***");
