@@ -12,7 +12,7 @@ type FormulaVisitorImpl struct {
 func (v *FormulaVisitorImpl) Visit(tree antlr.ParseTree) interface{} {
 	switch val := tree.(type) {
 	case *parser.EquationContext:
-		return val.Accept(v) //여기서 FormulaVisitor 타입이 나오지 않는다.
+		return val.Accept(v)
 	}
 	return nil
 }
@@ -22,6 +22,31 @@ func (v *FormulaVisitorImpl) VisitEquation(ctx *parser.EquationContext) interfac
 	right := ctx.Expr(1).Accept(v).(string)
 	return left + right
 }
+
+func (v *FormulaVisitorImpl) VisitExpr(ctx *parser.ExprContext) interface{} {
+	if ctx.OPENPAREN() != nil {
+		return ctx.Expr(0).Accept(v)
+	}
+	if ctx.Constant() != nil {
+		return ctx.Constant().Accept(v)
+	}
+	if ctx.Variable() != nil {
+		return ctx.Variable().Accept(v)
+	}
+	if ctx.Fraction() != nil {
+		return ctx.Fraction().Accept(v)
+	}
+	
+	if ctx.POW() != nil {
+		left := ctx.Expr(0).Accept(v)
+		right := ctx.Expr(1).Accept(v)
+		
+	}
+	
+	return ctx.GetText()
+}
+
+
 
 func (v *FormulaVisitorImpl) VisitVariable(ctx *parser.VariableContext) interface{} {
 
@@ -39,19 +64,16 @@ func (v *FormulaVisitorImpl) VisitSubscriptTail(ctx *parser.SubscriptTailContext
 	singleId := ctx.SINGLEID()
 	singleIntLit := ctx.SINGLEINTLIT()
 	
+	if ctx.SINGLEID() != nil {
+		return ctx.SINGLEID().GetText();
+	}
+	
 	if subscript == nil || openCurly == nil || generalId == nil || closeCurly == nil || generalIntLit == nil ||
 		singleId == nil || singleIntLit == nil {
 		println("yes.")
 	}
 	
 	return ctx.GeneralId().Accept(v)
-}
-
-func (v *FormulaVisitorImpl) VisitExpr(ctx *parser.ExprContext) interface{} {
-	if ctx.Variable() != nil {
-		return ctx.Variable().Accept(v)
-	}
-	return ctx.GetText()
 }
 
 func (v *FormulaVisitorImpl) VisitBinaryOperator(ctx *parser.BinaryOperatorContext) interface{} {
