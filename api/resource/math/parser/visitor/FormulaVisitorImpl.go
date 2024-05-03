@@ -65,7 +65,7 @@ func (v *FormulaVisitorImpl) VisitSubscriptTail(ctx *parser.SubscriptTailContext
 	singleIntLit := ctx.SINGLEINTLIT()
 	
 	if ctx.SINGLEID() != nil {
-		return ctx.SINGLEID().GetText();
+		return []string{ctx.SINGLEID().GetText()};
 	}
 	
 	if subscript == nil || openCurly == nil || generalId == nil || closeCurly == nil || generalIntLit == nil ||
