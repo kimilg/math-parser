@@ -28,10 +28,22 @@ func (v *FormulaVisitorImpl) VisitExpr(ctx *ExprContext) interface{} {
 		return ctx.Expr(0).Accept(v)
 	}
 	if ctx.Constant() != nil {
-		return ctx.Constant().Accept(v)
+		return math.Expression{
+			Elements: []math.Element{
+				math.Constant{
+					Value: ctx.Constant().Accept(v).(float64),
+				},
+			},
+			Description: "constant",
+		}
 	}
 	if ctx.Variable() != nil {
-		return ctx.Variable().Accept(v)
+		return math.Expression{
+			Elements: []math.Element{
+				ctx.Variable().Accept(v).(math.Variable),
+			},
+			Description: "variable",
+		}
 	}
 	if ctx.Fraction() != nil {
 		return ctx.Fraction().Accept(v)
@@ -109,16 +121,22 @@ func (v *FormulaVisitorImpl) VisitGeneralId(ctx *GeneralIdContext) interface{} {
 	return nil
 }
 
+func (v *FormulaVisitorImpl) VisitConstant(ctx *ConstantContext) interface{} {
+	if ctx.GeneralIntLit() != nil {
+		return ctx.GeneralIntLit().Accept(v).(float64)
+	}
+	if ctx.FLOATLIT() != nil {
+		return ctx.FLOATLIT().Accept(v).(float64)
+	}
+	
+	return nil
+}
 
 func (v *FormulaVisitorImpl) VisitBinaryOperator(ctx *BinaryOperatorContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
 func (v *FormulaVisitorImpl) VisitFraction(ctx *FractionContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *FormulaVisitorImpl) VisitConstant(ctx *ConstantContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -129,7 +147,6 @@ func (v *FormulaVisitorImpl) VisitArgumentList(ctx *ArgumentListContext) interfa
 func (v *FormulaVisitorImpl) VisitArgumentListTail(ctx *ArgumentListTailContext) interface{} {
 	return v.VisitChildren(ctx)
 }
-
 
 func (v *FormulaVisitorImpl) VisitGeneralIntLit(ctx *GeneralIntLitContext) interface{} {
 	return v.VisitChildren(ctx)

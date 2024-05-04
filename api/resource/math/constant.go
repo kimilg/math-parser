@@ -1,13 +1,9 @@
 package math
 
-import "gorm.io/gorm"
-
 type Constant struct {
-	gorm.Model
-	Constant string
-	Value string
-	Description string
-	ClassificationID uint
+	Name string `json:"name"` 
+	Value float64  `json:"value"`
+	Description string `json:"description"`
 }
 
 type ConstantForm struct {
