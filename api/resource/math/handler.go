@@ -3,10 +3,7 @@ package math
 import (
 	"encoding/json"
 	"github.com/antlr4-go/antlr/v4"
-	"math-parser/api/resource/math/model/constant"
-	"math-parser/api/resource/math/model/variable"
-	"math-parser/api/resource/math/parser/visitor"
-	"math-parser/parsing"
+	"math-parser/parser"
 	"net/http"
 	"strings"
 )
@@ -20,7 +17,7 @@ func New() *API {
 }
 
 func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
-	form := &Form{}
+	form := &EquationForm{}
 	if err := json.NewDecoder(r.Body).Decode(form); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -40,7 +37,7 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 	//var formulaListener listener.FormulaTreeListener
 	//antlr.ParseTreeWalkerDefault.Walk(&formulaListener, p.Equation())
 
-	var formulaVisitor visitor.FormulaVisitorImpl
+	var formulaVisitor parser.FormulaVisitorImpl
 	formulaVisitor.Visit(p.Equation())
 	
 	
@@ -53,14 +50,14 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) AddVariable(w http.ResponseWriter, r *http.Request) {
-	form := &variable.Form{}
-	if err := json.NewDecoder(r.Body).Decode(form); err != nil {
+	variableDTO := &VariableDTO{}
+	if err := json.NewDecoder(r.Body).Decode(variableDTO); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	println("***");
-	println("variable : " + form.Variable)
-	println("description : " + form.Description)
+	println("variable : " + variableDTO.Name)
+	println("description : " + variableDTO.Description)
 	println("***");
 
 
@@ -68,7 +65,7 @@ func (a *API) AddVariable(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) AddConstant(w http.ResponseWriter, r *http.Request) {
-	form := &constant.Form{}
+	form := &ConstantForm{}
 	if err := json.NewDecoder(r.Body).Decode(form); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

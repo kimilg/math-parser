@@ -1,6 +1,6 @@
 package math
 
-type Form struct {
+type EquationForm struct {
 	Equation string `json:"equation" form:"required"`
 }
 

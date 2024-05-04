@@ -2,7 +2,6 @@ package math
 
 import (
 	"gorm.io/gorm"
-	"math-parser/api/resource/math/model/classification"
 )
 
 type Repository struct {
@@ -15,8 +14,8 @@ func NewRepository(db *gorm.DB) *Repository {
 	}
 }
 
-func (r *Repository) List() ([]*classification.Classification, error) {
-	classifications := make([]*classification.Classification, 0)
+func (r *Repository) List() ([]*Classification, error) {
+	classifications := make([]*Classification, 0)
 	if err := r.db.Find(&classifications).Error; err != nil {
 		return nil, err
 	}

@@ -1,4 +1,4 @@
-package constant
+package math
 
 import "gorm.io/gorm"
 
@@ -10,7 +10,7 @@ type Constant struct {
 	ClassificationID uint
 }
 
-type Form struct {
+type ConstantForm struct {
 	Value string `json:"value"`
 	Description string `json:"description" form:"required"`
 }

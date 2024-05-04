@@ -1,4 +1,4 @@
-package mathobj
+package math
 
 type Mathobj interface {
 }

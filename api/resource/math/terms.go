@@ -1,16 +1,18 @@
-package operator
+package math
 
 import (
 	"gorm.io/gorm"
 )
 
-type Operator struct {
+type Terms struct {
 	gorm.Model
+	Mathobjs []Mathobj
 	Value string
 	Description string
+	ClassificationID uint
 }
 
-type Form struct {
+type TermsForm struct {
 	Value string `json:"value"`
 	Description string `json:"description" form:"required"`
 }

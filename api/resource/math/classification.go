@@ -1,22 +1,19 @@
-package classification
+package math
 
 import (
 	"gorm.io/gorm"
-	"math-parser/api/resource/math/model/constant"
-	"math-parser/api/resource/math/model/variable"
 )
 
 type Classification struct {
 	gorm.Model
 	Category string
 	Object   string
-	Variable []variable.Variable
-	Constant []constant.Constant
+	Variable []Variable `gorm:"many2many:variable_classifications;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type Classifications []*Classification
 
-type Form struct {
+type ClassificationForm struct {
 	Category string `json:"category" form:"required"`
 	Object   string `json:"object" form:"required"`
 }
