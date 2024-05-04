@@ -2,6 +2,7 @@ package parser
 
 import (
 	"github.com/antlr4-go/antlr/v4"
+	"math-parser/api/resource/math"
 )
 
 type FormulaVisitorImpl struct {
@@ -48,14 +49,16 @@ func (v *FormulaVisitorImpl) VisitExpr(ctx *ExprContext) interface{} {
 
 
 func (v *FormulaVisitorImpl) VisitVariable(ctx *VariableContext) interface{} {
-	//name := ctx.GeneralId().Accept(v).(string)
-	//subscript := ctx.SubscriptTail().Accept(v).(string)
+	name := ctx.GeneralId().Accept(v).(string)
+	subscripts := []rune(ctx.SubscriptTail().Accept(v).(string))
+	arguments := ctx.ArgumentTail().Accept(v).([]math.Expression)
 	
-	//variable := variable.DTO{Name:name, Subscripts:}
+	variable := math.Variable{Name:name, Subscripts:subscripts, 
+		Arguments: arguments, 
+		Description: "description..", 
+		Element: math.Element{Classifications: []math.Classification{{Category: "category", Type:"type"}}}}
 	
-	//arguments := ctx.ArgumentTail().Accept(v)
-	
-	return nil
+	return variable
 }
 
 func (v *FormulaVisitorImpl) VisitSubscriptTail(ctx *SubscriptTailContext) interface{} {
@@ -75,12 +78,23 @@ func (v *FormulaVisitorImpl) VisitSubscriptTail(ctx *SubscriptTailContext) inter
 	return nil
 }
 
+func (v *FormulaVisitorImpl) VisitArgumentTail(ctx *ArgumentTailContext) interface{} {
+	if ctx.SEMICOLON() == nil {
+		return ctx.ArgumentList(0).Accept(v).([]math.Expression)
+	}
+	
+	expressions := ctx.ArgumentList(0).Accept(v).([]math.Expression)
+	expressions = append(expressions, ctx.ArgumentList(1).Accept(v).([]math.Expression)...)
+	return expressions
+}
+
+
 func (v *FormulaVisitorImpl) VisitGeneralId(ctx *GeneralIdContext) interface{} {
 	if ctx.SINGLEID() != nil {
-		return []rune(ctx.SINGLEID().GetText())
+		return ctx.SINGLEID().GetText()
 	}
 	if ctx.ID() != nil {
-		return []rune(ctx.ID().GetText())
+		return ctx.ID().GetText()
 	}
 	return nil
 }
@@ -95,10 +109,6 @@ func (v *FormulaVisitorImpl) VisitFraction(ctx *FractionContext) interface{} {
 }
 
 func (v *FormulaVisitorImpl) VisitConstant(ctx *ConstantContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *FormulaVisitorImpl) VisitArgumentTail(ctx *ArgumentTailContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 

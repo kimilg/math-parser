@@ -4,13 +4,14 @@ import (
 	"gorm.io/gorm"
 )
 
-type Operator struct {
+type Expression struct {
 	gorm.Model `json:"-" gorm:"-"`
-	Value string `json:"value"`
+	Element `gorm:"embedded"`
+	Elements []Element `json:"elements"`
 	Description string `json:"description"`
 }
 
-type OperatorForm struct {
+type ExpressionsForm struct {
 	Value string `json:"value"`
 	Description string `json:"description" form:"required"`
 }

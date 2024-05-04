@@ -50,14 +50,14 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) AddVariable(w http.ResponseWriter, r *http.Request) {
-	variableDTO := &VariableDTO{}
-	if err := json.NewDecoder(r.Body).Decode(variableDTO); err != nil {
+	variable := &Variable{}
+	if err := json.NewDecoder(r.Body).Decode(variable); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	println("***");
-	println("variable : " + variableDTO.Name)
-	println("description : " + variableDTO.Description)
+	println("variable : " + variable.Name)
+	println("description : " + variable.Description)
 	println("***");
 
 
