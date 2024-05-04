@@ -10,7 +10,8 @@ type Classification struct {
 	Type     string `json:"type"`
 	IsCause  bool   `json:"isCause"`
 	IsEffect bool   `json:"isEffect"`
-	Elements []Element `json:"elements" gorm:"many2many:element_classifications;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Expressions []Expression `json:"expressions" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Variables []Variable `json:"variables" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type Classifications []*Classification

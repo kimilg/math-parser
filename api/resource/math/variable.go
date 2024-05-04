@@ -6,7 +6,7 @@ import (
 
 type Variable struct {
 	gorm.Model `json:"-" gorm:"-"`
-	Element `gorm:"embedded"`
+	ClassificationID uint
 	Name string `json:"name"`
 	Subscripts []rune `json:"subscripts"`
 	Arguments []Expression `json:"arguments"`

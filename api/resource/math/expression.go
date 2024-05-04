@@ -6,8 +6,10 @@ import (
 
 type Expression struct {
 	gorm.Model `json:"-" gorm:"-"`
-	Element `gorm:"embedded"`
+	ClassificationID uint
 	Elements []Element `json:"elements"`
+	IsCause  bool   `json:"isCause"`
+	IsEffect bool   `json:"isEffect"`
 	Description string `json:"description"`
 }
 

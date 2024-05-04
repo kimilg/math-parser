@@ -46,17 +46,17 @@ func (v *FormulaVisitorImpl) VisitExpr(ctx *ExprContext) interface{} {
 	return ctx.GetText()
 }
 
-
-
 func (v *FormulaVisitorImpl) VisitVariable(ctx *VariableContext) interface{} {
 	name := ctx.GeneralId().Accept(v).(string)
 	subscripts := []rune(ctx.SubscriptTail().Accept(v).(string))
 	arguments := ctx.ArgumentTail().Accept(v).([]math.Expression)
 	
-	variable := math.Variable{Name:name, Subscripts:subscripts, 
-		Arguments: arguments, 
-		Description: "description..", 
-		Element: math.Element{Classifications: []math.Classification{{Category: "category", Type:"type"}}}}
+	variable := math.Variable{
+		Name:        name,
+		Subscripts:  subscripts,
+		Arguments:   arguments,
+		Description: "description..",
+	}
 	
 	return variable
 }
@@ -83,8 +83,18 @@ func (v *FormulaVisitorImpl) VisitArgumentTail(ctx *ArgumentTailContext) interfa
 		return ctx.ArgumentList(0).Accept(v).([]math.Expression)
 	}
 	
-	expressions := ctx.ArgumentList(0).Accept(v).([]math.Expression)
-	expressions = append(expressions, ctx.ArgumentList(1).Accept(v).([]math.Expression)...)
+	left := ctx.ArgumentList(0).Accept(v).([]math.Expression)
+	for _, expr := range left {
+		expr.IsEffect = true
+	}
+
+	right := ctx.ArgumentList(1).Accept(v).([]math.Expression)
+	for _, expr := range right {
+		expr.IsCause = true
+	}
+	
+	expressions := left
+	expressions = append(expressions, right...)
 	return expressions
 }
 
