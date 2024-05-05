@@ -1,12 +1,16 @@
 package math
 
-import (
-	"gorm.io/gorm"
+const (
+	PLUS byte = iota
+	MINUS
+	MULT
+	DIV
+	POW
+	EQUAL
 )
 
 type Operator struct {
-	gorm.Model `json:"-" gorm:"-"`
-	Value string `json:"value"`
+	Value byte `json:"value"`
 	Description string `json:"description"`
 }
 
@@ -14,3 +18,4 @@ type OperatorForm struct {
 	Value string `json:"value"`
 	Description string `json:"description" form:"required"`
 }
+

@@ -1,8 +1,10 @@
 package parser
 
 import (
+	"fmt"
 	"github.com/antlr4-go/antlr/v4"
 	"math-parser/api/resource/math"
+	"strconv"
 )
 
 type FormulaVisitorImpl struct {
@@ -48,14 +50,23 @@ func (v *FormulaVisitorImpl) VisitExpr(ctx *ExprContext) interface{} {
 	if ctx.Fraction() != nil {
 		return ctx.Fraction().Accept(v)
 	}
-	
 	if ctx.POW() != nil {
-		//left := ctx.Expr(0).Accept(v)
-		//right := ctx.Expr(1).Accept(v)
-		
+		return v.exprForBinaryOp(ctx, math.POW)
+	}
+	if ctx.MULT() != nil {
+		return v.exprForBinaryOp(ctx, math.MULT)
+	}
+	if ctx.DIV() != nil {
+		return v.exprForBinaryOp(ctx, math.DIV)
+	}
+	if ctx.PLUS() != nil {
+		return v.exprForBinaryOp(ctx, math.PLUS)
+	}
+	if ctx.MINUS() != nil {
+		return v.exprForBinaryOp(ctx, math.MINUS)
 	}
 	
-	return ctx.GetText()
+	return nil
 }
 
 func (v *FormulaVisitorImpl) VisitVariable(ctx *VariableContext) interface{} {
@@ -132,23 +143,59 @@ func (v *FormulaVisitorImpl) VisitConstant(ctx *ConstantContext) interface{} {
 	return nil
 }
 
+func (v *FormulaVisitorImpl) VisitFraction(ctx *FractionContext) interface{} {
+	return math.Expression{Elements: []math.Element{
+		ctx.Expr(0).Accept(v),
+		math.Operator{Value: math.DIV},
+		ctx.Expr(1).Accept(v),
+	}}
+}
+
+
 func (v *FormulaVisitorImpl) VisitBinaryOperator(ctx *BinaryOperatorContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
-func (v *FormulaVisitorImpl) VisitFraction(ctx *FractionContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
 func (v *FormulaVisitorImpl) VisitArgumentList(ctx *ArgumentListContext) interface{} {
-	return v.VisitChildren(ctx)
+	expressions := []math.Expression{ctx.Expr().Accept(v).(math.Expression)}
+	if ctx.ArgumentListTail() != nil {
+		expressions = append(expressions, ctx.ArgumentListTail().Accept(v).([]math.Expression)...)
+	}
+	return expressions
 }
 
 func (v *FormulaVisitorImpl) VisitArgumentListTail(ctx *ArgumentListTailContext) interface{} {
-	return v.VisitChildren(ctx)
+	expressions := []math.Expression{ctx.Expr().Accept(v).(math.Expression)}
+	if ctx.ArgumentListTail() != nil {
+		expressions = append(expressions, ctx.ArgumentListTail().Accept(v).([]math.Expression)...)
+	}
+	return expressions
 }
 
 func (v *FormulaVisitorImpl) VisitGeneralIntLit(ctx *GeneralIntLitContext) interface{} {
-	return v.VisitChildren(ctx)
+	if ctx.SINGLEINTLIT() != nil {
+		singleIntLit, err := strconv.Atoi(ctx.SINGLEINTLIT().GetText())
+		if err != nil {
+			fmt.Errorf("singleIntLit %s should be integer: %w", ctx.SINGLEINTLIT().GetText(), err)
+		}
+		return singleIntLit
+	}
+	if ctx.INTLIT() != nil {
+		intLit, err := strconv.Atoi(ctx.INTLIT().GetText())
+		if err != nil {
+			fmt.Errorf("intLit %s should be integer: %w", ctx.INTLIT().GetText(), err)
+		}
+		return intLit
+	}
+	
+	return nil
 }
 
+func (v *FormulaVisitorImpl) exprForBinaryOp(ctx *ExprContext, operator byte) math.Expression {
+	return math.Expression{
+		Elements: []math.Element{
+			ctx.Expr(0).Accept(v),
+			operator,
+			ctx.Expr(1).Accept(v),
+		}}
+}
