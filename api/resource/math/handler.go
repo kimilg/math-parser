@@ -2,6 +2,7 @@ package math
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/antlr4-go/antlr/v4"
 	"math-parser/parser"
 	"net/http"
@@ -37,8 +38,11 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 	//var formulaListener listener.FormulaTreeListener
 	//antlr.ParseTreeWalkerDefault.Walk(&formulaListener, p.Equation())
 
-	var formulaVisitor parser.FormulaVisitorImpl
-	formulaVisitor.Visit(p.Equation())
+	var formulaVisitor FormulaVisitorImpl
+	eqn := formulaVisitor.Visit(p.Equation())
+	if eqn == nil {
+		fmt.Errorf("nil equation")
+	}
 	
 	
 	println("***");

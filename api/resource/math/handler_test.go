@@ -17,7 +17,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	eqnString := "G_{nm}(\\xi_2, \\tau; \\xi_1, 0)=G_{mn}(\\xi_1, \\tau; \\xi_2, 0)"
+	equation := "G_{nm}(\\xi_2, \\tau; \\xi_1, 0)=G_{mn}(\\xi_1, \\tau; \\xi_2, 0)"
 	
 	mathAPI := New()
 	handler := requestlog.NewHandler(mathAPI.Parse)
@@ -28,7 +28,7 @@ func TestParse(t *testing.T) {
 	e := httpexpect.Default(t, server.URL)
 	
 	eqn := map[string]interface{}{
-		"equation": eqnString,
+		"equation": equation,
 	}
 	e.POST("/parse").WithJSON(eqn).
 		Expect().
