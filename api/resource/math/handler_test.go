@@ -19,7 +19,8 @@ func TestNew(t *testing.T) {
 func TestParse(t *testing.T) {
 	equation := "G_{nm}(\\xi_2, \\tau; \\xi_1, 0)=G_{mn}(\\xi_1, \\tau; \\xi_2, 0)"
 	
-	mathAPI := New()
+	// 수정 필요.
+	mathAPI := New(nil) 
 	handler := requestlog.NewHandler(mathAPI.Parse)
 	
 	server := httptest.NewServer(handler)

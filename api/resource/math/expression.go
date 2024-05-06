@@ -1,11 +1,6 @@
 package math
 
-import (
-	"gorm.io/gorm"
-)
-
 type Expression struct {
-	gorm.Model `json:"-" gorm:"-"`
 	ClassificationID uint
 	Elements []Element `json:"elements"`
 	IsCause  bool   `json:"isCause"`

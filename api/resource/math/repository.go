@@ -1,23 +1,23 @@
 package math
 
 import (
-	"gorm.io/gorm"
+	"math-parser/db"
 )
 
 type Repository struct {
-	db *gorm.DB
+	queries *db.Queries
 }
 
-func NewRepository(db *gorm.DB) *Repository {
+func NewRepository(queries *db.Queries) *Repository {
 	return &Repository{
-		db: db,
+		queries: queries,
 	}
 }
 
-func (r *Repository) List() ([]*Classification, error) {
-	classifications := make([]*Classification, 0)
-	if err := r.db.Find(&classifications).Error; err != nil {
-		return nil, err
-	}
-	return classifications, nil
-}
+//func (r *Repository) List() ([]*Equation, error) {
+//	equations := make([]*Equation, 0)
+//	if err := r.queries.ListEquations().Error; err != nil {
+//		return nil, err
+//	}
+//	return classifications, nil
+//}

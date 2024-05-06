@@ -1,0 +1,12 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "db/query"
+    schema: "migrations"
+    database:
+      uri: "postgres://myapp_user:myapp_pass@localhost:5432/myapp_db"
+    gen:
+      go:
+        package: "db"
+        out: "db"
+        sql_package: "pgx/v5"

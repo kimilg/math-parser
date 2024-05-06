@@ -2,7 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"github.com/jackc/pgx/v5"
+	"log"
 	"math-parser/api/router"
+	"math-parser/config"
+	"math-parser/db"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,18 +15,30 @@ import (
 	"time"
 )
 
-func main() {
+const fmtDBString = "host=%s user=%s password=%s dbname=%s port=%d sslmode=disable"
 
-	r := router.New()
+func main() {
+	c := config.New()
+	ctx := context.Background()
+
+	dbString := fmt.Sprintf(fmtDBString, c.DB.Host, c.DB.Username, c.DB.Password, c.DB.DBName, c.DB.Port)
+	conn, err := pgx.Connect(ctx, dbString)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close(ctx)
+	
+	queries := db.New(conn)
+	r := router.New(queries)
 
 	s := &http.Server{
-		Addr:         ":8080",
+		Addr:         fmt.Sprintf(":%d", c.Server.Port),
 		Handler:      r,
-		ReadTimeout:  time.Duration(3) * time.Second,
-		WriteTimeout: time.Duration(5) * time.Second,
-		IdleTimeout:  time.Duration(5) * time.Second,
+		ReadTimeout:  c.Server.TimeoutRead,
+		WriteTimeout: c.Server.TimeoutWrite,
+		IdleTimeout:  c.Server.TimeoutWrite,
 	}
-
+	
 	closed := make(chan struct{})
 	go func() {
 		sigint := make(chan os.Signal, 1)
@@ -41,5 +58,4 @@ func main() {
 	}
 	
 	<-closed
-	
 }

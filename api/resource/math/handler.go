@@ -4,28 +4,31 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/antlr4-go/antlr/v4"
+	"math-parser/db"
 	"math-parser/parser"
 	"net/http"
 	"strings"
 )
 
 type API struct {
-	
+	repository *Repository
 }
 
-func New() *API {
-	return &API{}
+func New(queries *db.Queries) *API {
+	return &API{
+		repository: NewRepository(queries),
+	}
 }
 
 func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
-	form := &EquationForm{}
+	form := &Equation{}
 	if err := json.NewDecoder(r.Body).Decode(form); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	//apply grammar to parse after removing space.
-	equation := strings.TrimSpace(form.Equation)
+	equation := strings.TrimSpace(form.Value)
 	
 	is := antlr.NewInputStream(equation)
 	
@@ -36,7 +39,7 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 
 	//var formulaListener listener.FormulaTreeListener
-	//antlr.ParseTreeWalkerDefault.Walk(&formulaListener, p.Equation())
+	//antlr.ParseTreeWalkerDefault.Walk(&formulaListener, p.Value())
 
 	var formulaVisitor FormulaVisitorImpl
 	eqn := formulaVisitor.Visit(p.Equation())
@@ -46,7 +49,7 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 	
 	
 	println("***");
-	println("equation : " + form.Equation)
+	println("equation : " + form.Value)
 	println("***");
 	
 	
