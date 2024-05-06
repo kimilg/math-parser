@@ -59,6 +59,24 @@ func (q *Queries) GetEquation(ctx context.Context, id int64) (Equation, error) {
 	return i, err
 }
 
+const getEquationFromValue = `-- name: GetEquationFromValue :one
+SELECT id, value, created_at, updated_at, deleted_at FROM equations
+WHERE value = $1 LIMIT 1
+`
+
+func (q *Queries) GetEquationFromValue(ctx context.Context, value string) (Equation, error) {
+	row := q.db.QueryRow(ctx, getEquationFromValue, value)
+	var i Equation
+	err := row.Scan(
+		&i.ID,
+		&i.Value,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
 const listEquations = `-- name: ListEquations :many
 SELECT id, value, created_at, updated_at, deleted_at FROM equations
 ORDER BY id

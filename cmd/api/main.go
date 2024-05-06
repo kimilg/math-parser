@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v5"
 	"log"
+	"math-parser/api/resource/math"
 	"math-parser/api/router"
 	"math-parser/config"
 	"math-parser/db"
@@ -29,7 +30,8 @@ func main() {
 	defer conn.Close(ctx)
 	
 	queries := db.New(conn)
-	r := router.New(queries)
+	repository := math.NewRepository(queries)
+	r := router.New(repository)
 
 	s := &http.Server{
 		Addr:         fmt.Sprintf(":%d", c.Server.Port),

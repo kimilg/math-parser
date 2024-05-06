@@ -4,19 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/antlr4-go/antlr/v4"
-	"math-parser/db"
 	"math-parser/parser"
 	"net/http"
 	"strings"
 )
 
 type API struct {
-	repository *Repository
+	equationService *EquationService
 }
 
-func New(queries *db.Queries) *API {
+func New(repository *EquationRepository) *API {
 	return &API{
-		repository: NewRepository(queries),
+		equationService: NewEquationService(*repository),
 	}
 }
 
@@ -26,32 +25,20 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	//apply grammar to parse after removing space.
-	equation := strings.TrimSpace(form.Value)
+	value := strings.TrimSpace(form.Value)
 	
-	is := antlr.NewInputStream(equation)
-	
-	lexer := parser.NewFormulaLexer(is)
-	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
-	
-	p := parser.NewFormulaParser(stream)
-	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
-
-	//var formulaListener listener.FormulaTreeListener
-	//antlr.ParseTreeWalkerDefault.Walk(&formulaListener, p.Value())
-
-	var formulaVisitor FormulaVisitorImpl
-	eqn := formulaVisitor.Visit(p.Equation())
-	if eqn == nil {
-		fmt.Errorf("nil equation")
+	eq, err := a.equationService.CreateEquation(r.Context(), value)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+	fmt.Printf("equation Id: %d, Value: %s\n", eq.Id, eq.Value)
 	
+	equation := a.parseEquation(value)
 	
+	print(equation.Description)	
 	println("***");
-	println("equation : " + form.Value)
+	println("value : " + form.Value)
 	println("***");
-	
 	
 	w.WriteHeader(http.StatusOK)
 }
@@ -83,4 +70,21 @@ func (a *API) AddConstant(w http.ResponseWriter, r *http.Request) {
 	println("***");
 	
 	w.WriteHeader(http.StatusOK)
+}
+
+func (a *API) parseEquation(value string) Expression {
+	is := antlr.NewInputStream(value)
+
+	lexer := parser.NewFormulaLexer(is)
+	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
+
+	p := parser.NewFormulaParser(stream)
+	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+
+	var formulaVisitor FormulaVisitorImpl
+	eqn := formulaVisitor.Visit(p.Equation())
+	if eqn == nil {
+		fmt.Errorf("nil value")
+	}
+	return eqn.(Expression)
 }

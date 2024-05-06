@@ -1,6 +1,7 @@
 package math
 
 import (
+	"context"
 	"fmt"
 	"github.com/gavv/httpexpect/v2"
 	"math-parser/api/router/requestlog"
@@ -16,11 +17,37 @@ func TestNew(t *testing.T) {
 	}
 }
 
+
+type mockEquationRepository struct {}
+
+func (r *mockEquationRepository) CreateEquation(ctx context.Context, value string) (*Equation, error) {
+	return &Equation{
+		Id: 0,
+		Value: value,
+	}, nil
+}
+func (r *mockEquationRepository) GetEquation(ctx context.Context, id ID) (*Equation, error) {
+	return nil, nil
+}
+func (r *mockEquationRepository) GetEquationFromValue(ctx context.Context, value string) (*Equation, error) {
+	return nil, nil
+}
+func (r *mockEquationRepository) ListEquations(ctx context.Context) ([]*Equation, error) {
+	return nil, nil
+}
+func (r *mockEquationRepository) UpdateEquation(ctx context.Context, id ID, value string) (*Equation, error) {
+	return nil, nil
+}
+func (r *mockEquationRepository) DeleteEquation(ctx context.Context, id ID) error {
+	return nil
+}
+
 func TestParse(t *testing.T) {
 	equation := "G_{nm}(\\xi_2, \\tau; \\xi_1, 0)=G_{mn}(\\xi_1, \\tau; \\xi_2, 0)"
 	
 	// 수정 필요.
-	mathAPI := New(nil) 
+	repo := &mockEquationRepository{}
+	mathAPI := New(repo)
 	handler := requestlog.NewHandler(mathAPI.Parse)
 	
 	server := httptest.NewServer(handler)

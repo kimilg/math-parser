@@ -2,6 +2,10 @@
 SELECT * FROM equations
 WHERE id = $1 LIMIT 1;
 
+-- name: GetEquationFromValue :one
+SELECT * FROM equations
+WHERE value = $1 LIMIT 1;
+
 -- name: ListEquations :many
 SELECT * FROM equations
 ORDER BY id;
