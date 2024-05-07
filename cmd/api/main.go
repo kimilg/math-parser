@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
 	"log"
 	"math-parser/api/resource/math"
 	"math-parser/api/router"
@@ -17,12 +18,17 @@ import (
 )
 
 const fmtDBString = "host=%s user=%s password=%s dbname=%s port=%d sslmode=disable"
-
+const fmtDBUrl = "postgres://%s:%s@%s:%d/%s?sslmode=%s"
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	
 	c := config.New()
 	ctx := context.Background()
 
-	dbString := fmt.Sprintf(fmtDBString, c.DB.Host, c.DB.Username, c.DB.Password, c.DB.DBName, c.DB.Port)
+	dbString := fmt.Sprintf(fmtDBUrl, c.DB.Username, c.DB.Password, c.DB.Host, c.DB.Port, c.DB.DBName)
 	conn, err := pgx.Connect(ctx, dbString)
 	if err != nil {
 		log.Fatal(err)
