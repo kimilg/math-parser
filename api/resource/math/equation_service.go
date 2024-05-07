@@ -5,12 +5,12 @@ import (
 )
 
 type EquationRepository interface {
-	GetEquation(ctx context.Context, id ID) (*Equation, error)
-	GetEquationFromValue(ctx context.Context, value string) (*Equation, error)
-	ListEquations(ctx context.Context) ([]*Equation, error)
-	CreateEquation(ctx context.Context, value string) (*Equation, error)
-	UpdateEquation(ctx context.Context, id ID, value string) (*Equation, error)
-	DeleteEquation(ctx context.Context, id ID) error
+	Get(ctx context.Context, id ID) (*Equation, error)
+	GetFromValue(ctx context.Context, value string) (*Equation, error)
+	List(ctx context.Context) ([]*Equation, error)
+	Create(ctx context.Context, value string) (*Equation, error)
+	Update(ctx context.Context, id ID, value string) (*Equation, error)
+	Delete(ctx context.Context, id ID) error
 }
 
 type EquationService struct {
@@ -21,26 +21,26 @@ func NewEquationService(repository EquationRepository) *EquationService {
 	return &EquationService{repository: repository}
 }
 
-func (s *EquationService) GetEquation(ctx context.Context, id ID) (*Equation, error) {
-	return s.repository.GetEquation(ctx, id)
+func (s *EquationService) Get(ctx context.Context, id ID) (*Equation, error) {
+	return s.repository.Get(ctx, id)
 }
 
-func (s *EquationService) GetEquationFromValue(ctx context.Context, value string) (*Equation, error) {
-	return s.repository.GetEquationFromValue(ctx, value)
+func (s *EquationService) GetFromValue(ctx context.Context, value string) (*Equation, error) {
+	return s.repository.GetFromValue(ctx, value)
 }
 
-func (s *EquationService) ListEquations(ctx context.Context) ([]*Equation, error) {
-	return s.repository.ListEquations(ctx)
+func (s *EquationService) List(ctx context.Context) ([]*Equation, error) {
+	return s.repository.List(ctx)
 }
 
-func (s *EquationService) CreateEquation(ctx context.Context, value string) (*Equation, error) {
-	return s.repository.CreateEquation(ctx, value)
+func (s *EquationService) Create(ctx context.Context, value string) (*Equation, error) {
+	return s.repository.Create(ctx, value)
 }
 
-func (s *EquationService) UpdateEquation(ctx context.Context, id ID, value string) (*Equation, error) {
-	return s.repository.UpdateEquation(ctx, id, value)
+func (s *EquationService) Update(ctx context.Context, id ID, value string) (*Equation, error) {
+	return s.repository.Update(ctx, id, value)
 }
 
-func (s *EquationService) DeleteEquation(ctx context.Context, id ID) error {
-	return s.repository.DeleteEquation(ctx, id)
+func (s *EquationService) Delete(ctx context.Context, id ID) error {
+	return s.repository.Delete(ctx, id)
 }

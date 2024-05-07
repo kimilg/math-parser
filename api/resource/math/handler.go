@@ -13,9 +13,9 @@ type API struct {
 	equationService *EquationService
 }
 
-func New(repository *EquationRepository) *API {
+func New(repository EquationRepository) *API {
 	return &API{
-		equationService: NewEquationService(*repository),
+		equationService: NewEquationService(repository),
 	}
 }
 
@@ -27,7 +27,7 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 	}
 	value := strings.TrimSpace(form.Value)
 	
-	eq, err := a.equationService.CreateEquation(r.Context(), value)
+	eq, err := a.equationService.Create(r.Context(), value)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

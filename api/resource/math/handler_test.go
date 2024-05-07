@@ -20,25 +20,25 @@ func TestNew(t *testing.T) {
 
 type mockEquationRepository struct {}
 
-func (r *mockEquationRepository) CreateEquation(ctx context.Context, value string) (*Equation, error) {
+func (r *mockEquationRepository) Create(ctx context.Context, value string) (*Equation, error) {
 	return &Equation{
 		Id: 0,
 		Value: value,
 	}, nil
 }
-func (r *mockEquationRepository) GetEquation(ctx context.Context, id ID) (*Equation, error) {
+func (r *mockEquationRepository) Get(ctx context.Context, id ID) (*Equation, error) {
 	return nil, nil
 }
-func (r *mockEquationRepository) GetEquationFromValue(ctx context.Context, value string) (*Equation, error) {
+func (r *mockEquationRepository) GetFromValue(ctx context.Context, value string) (*Equation, error) {
 	return nil, nil
 }
-func (r *mockEquationRepository) ListEquations(ctx context.Context) ([]*Equation, error) {
+func (r *mockEquationRepository) List(ctx context.Context) ([]*Equation, error) {
 	return nil, nil
 }
-func (r *mockEquationRepository) UpdateEquation(ctx context.Context, id ID, value string) (*Equation, error) {
+func (r *mockEquationRepository) Update(ctx context.Context, id ID, value string) (*Equation, error) {
 	return nil, nil
 }
-func (r *mockEquationRepository) DeleteEquation(ctx context.Context, id ID) error {
+func (r *mockEquationRepository) Delete(ctx context.Context, id ID) error {
 	return nil
 }
 
@@ -55,7 +55,7 @@ func TestParse(t *testing.T) {
 	
 	e := httpexpect.Default(t, server.URL)
 	
-	eqn := map[string]interface{}{
+	eqn := map[string]interface{} {
 		"equation": equation,
 	}
 	e.POST("/parse").WithJSON(eqn).

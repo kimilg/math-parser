@@ -16,7 +16,7 @@ func NewRepository(queries *db.Queries) *Repository {
 	}
 }
 
-func (r *Repository) GetEquation(ctx context.Context, id ID) (*Equation, error) {
+func (r *Repository) Get(ctx context.Context, id ID) (*Equation, error) {
 	eqn, err := r.queries.GetEquation(ctx, int64(id))
 	if err != nil {
 		return nil, fmt.Errorf("error reading from database: %w", err)
@@ -27,7 +27,7 @@ func (r *Repository) GetEquation(ctx context.Context, id ID) (*Equation, error) 
 	}, nil
 }
 
-func (r *Repository) GetEquationFromValue(ctx context.Context, value string) (*Equation, error) {
+func (r *Repository) GetFromValue(ctx context.Context, value string) (*Equation, error) {
 	eqn, err := r.queries.GetEquationFromValue(ctx, value)
 	if err != nil {
 		return nil, fmt.Errorf("error reading from database: %w", err)
@@ -38,7 +38,7 @@ func (r *Repository) GetEquationFromValue(ctx context.Context, value string) (*E
 	}, nil
 }
 
-func (r *Repository) ListEquations(ctx context.Context) ([]*Equation, error) {
+func (r *Repository) List(ctx context.Context) ([]*Equation, error) {
 	eqns, err := r.queries.ListEquations(ctx); 
 	if err != nil {
 		return nil, fmt.Errorf("error reading from database: %w", err)
@@ -54,7 +54,7 @@ func (r *Repository) ListEquations(ctx context.Context) ([]*Equation, error) {
 	return equations, nil
 }
 
-func (r *Repository) CreateEquation(ctx context.Context, value string) (*Equation, error) {
+func (r *Repository) Create(ctx context.Context, value string) (*Equation, error) {
 	eqn, err := r.queries.CreateEquation(ctx, value)
 	if err != nil {
 		return nil, fmt.Errorf("error creating equation: %w", err)
@@ -65,7 +65,7 @@ func (r *Repository) CreateEquation(ctx context.Context, value string) (*Equatio
 	}, nil
 }
 
-func (r *Repository) UpdateEquation(ctx context.Context, id ID, value string) (*Equation, error) {
+func (r *Repository) Update(ctx context.Context, id ID, value string) (*Equation, error) {
 	eqn, err := r.queries.UpdateEquation(ctx, db.UpdateEquationParams{int64(id), value})
 	if err != nil {
 		return nil, fmt.Errorf("error updating equation: %w", err)
@@ -76,7 +76,7 @@ func (r *Repository) UpdateEquation(ctx context.Context, id ID, value string) (*
 	}, nil
 }
 
-func (r *Repository) DeleteEquation(ctx context.Context, id ID) error {
+func (r *Repository) Delete(ctx context.Context, id ID) error {
 	err := r.queries.DeleteEquation(ctx, int64(id))
 	if err != nil {
 		return fmt.Errorf("error deleting equation: %w", err)
