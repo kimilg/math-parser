@@ -30,7 +30,7 @@ func (v *FormulaVisitorImpl) VisitEquation(ctx *parser.EquationContext) interfac
 
 func (v *FormulaVisitorImpl) VisitExpr(ctx *parser.ExprContext) interface{} {
 	str := ctx.GetText()
-	print(str)
+	println(str)
 	if ctx.OPENPAREN() != nil {
 		return ctx.Expr(0).Accept(v)
 	}
@@ -76,7 +76,7 @@ func (v *FormulaVisitorImpl) VisitExpr(ctx *parser.ExprContext) interface{} {
 
 func (v *FormulaVisitorImpl) VisitVariable(ctx *parser.VariableContext) interface{} {
 	str := ctx.GetText()
-	print(str)
+	println(str)
 	
 	name := ctx.GeneralId().Accept(v).(string)
 	var subscripts []rune
@@ -124,14 +124,14 @@ func (v *FormulaVisitorImpl) VisitArgumentTail(ctx *parser.ArgumentTailContext) 
 	}
 	
 	str := ctx.ArgumentList(0).GetText()
-	print(str)
+	println(str)
 	left := ctx.ArgumentList(0).Accept(v).([]Expression)
 	for _, expr := range left {
 		expr.IsEffect = true
 	}
 
 	str = ctx.ArgumentList(1).GetText()
-	print(str)
+	println(str)
 	right := ctx.ArgumentList(1).Accept(v).([]Expression)
 	for _, expr := range right {
 		expr.IsCause = true
