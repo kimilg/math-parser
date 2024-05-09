@@ -11,9 +11,9 @@ import (
 
 const createEquation = `-- name: CreateEquation :one
 INSERT INTO equations (
-    value
+    value, created_at, updated_at
 ) VALUES (
-    $1
+    $1, current_timestamp, current_timestamp
  )
 RETURNING id, value, created_at, updated_at, deleted_at
 `
@@ -33,7 +33,7 @@ func (q *Queries) CreateEquation(ctx context.Context, value string) (Equation, e
 
 const deleteEquation = `-- name: DeleteEquation :exec
 DELETE FROM equations
-WHERE id = $1
+WHERE id=$1
 `
 
 func (q *Queries) DeleteEquation(ctx context.Context, id int64) error {
@@ -110,8 +110,8 @@ func (q *Queries) ListEquations(ctx context.Context) ([]Equation, error) {
 
 const updateEquation = `-- name: UpdateEquation :one
 UPDATE equations
-set value = $2
-WHERE id = $1
+set value=$2, updated_at=current_timestamp
+WHERE id=$1
 RETURNING id, value, created_at, updated_at, deleted_at
 `
 

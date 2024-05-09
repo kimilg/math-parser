@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS equations
 (
     id             BIGSERIAL PRIMARY KEY,
     value          text NOT NULL,
-    created_at     TIMESTAMP NOT NULL,
-    updated_at     TIMESTAMP NOT NULL,
+    created_at     TIMESTAMP NOT NULL default current_timestamp,
+    updated_at     TIMESTAMP NOT NULL default current_timestamp,
     deleted_at     TIMESTAMP NULL
 );
 -- +goose StatementEnd

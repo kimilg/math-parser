@@ -17,7 +17,6 @@ import (
 	"time"
 )
 
-const fmtDBString = "host=%s user=%s password=%s dbname=%s port=%d sslmode=disable"
 const fmtDBUrl = "postgres://%s:%s@%s:%d/%s?sslmode=%s"
 func main() {
 	err := godotenv.Load()
@@ -28,7 +27,7 @@ func main() {
 	c := config.New()
 	ctx := context.Background()
 
-	dbString := fmt.Sprintf(fmtDBUrl, c.DB.Username, c.DB.Password, c.DB.Host, c.DB.Port, c.DB.DBName)
+	dbString := fmt.Sprintf(fmtDBUrl, c.DB.Username, c.DB.Password, c.DB.Host, c.DB.Port, c.DB.DBName, false)
 	conn, err := pgx.Connect(ctx, dbString)
 	if err != nil {
 		log.Fatal(err)
