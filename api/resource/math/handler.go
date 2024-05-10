@@ -27,12 +27,15 @@ func (a *API) Parse(w http.ResponseWriter, r *http.Request) {
 	}
 	value := strings.TrimSpace(form.Value)
 	
-	eq, err := a.equationService.Create(r.Context(), value)
+	eq, err := a.equationService.GetFromValue(r.Context(), value)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		eq, err = a.equationService.Create(r.Context(), value)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	}
+
 	fmt.Printf("equation Id: %d, Value: %s\n", eq.Id, eq.Value)
-	
 	equation := a.parseEquation(value)
 	
 	print(equation.Description)	
