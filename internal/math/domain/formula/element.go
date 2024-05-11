@@ -1,4 +1,4 @@
-package math
+package formula
 
 type Element interface {
 	

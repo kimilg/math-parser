@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gavv/httpexpect/v2"
 	"math-parser/api/router/requestlog"
+	"math-parser/internal/math/domain/formula"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -20,25 +21,25 @@ func TestNew(t *testing.T) {
 
 type mockEquationRepository struct {}
 
-func (r *mockEquationRepository) Create(ctx context.Context, value string) (*Equation, error) {
-	return &Equation{
+func (r *mockEquationRepository) Create(ctx context.Context, value string) (*formula.Equation, error) {
+	return &formula.Equation{
 		Id: 0,
 		Value: value,
 	}, nil
 }
-func (r *mockEquationRepository) Get(ctx context.Context, id ID) (*Equation, error) {
+func (r *mockEquationRepository) Get(ctx context.Context, id formula.ID) (*formula.Equation, error) {
 	return nil, nil
 }
-func (r *mockEquationRepository) GetFromValue(ctx context.Context, value string) (*Equation, error) {
+func (r *mockEquationRepository) GetFromValue(ctx context.Context, value string) (*formula.Equation, error) {
 	return nil, nil
 }
-func (r *mockEquationRepository) List(ctx context.Context) ([]*Equation, error) {
+func (r *mockEquationRepository) List(ctx context.Context) ([]*formula.Equation, error) {
 	return nil, nil
 }
-func (r *mockEquationRepository) Update(ctx context.Context, id ID, value string) (*Equation, error) {
+func (r *mockEquationRepository) Update(ctx context.Context, id formula.ID, value string) (*formula.Equation, error) {
 	return nil, nil
 }
-func (r *mockEquationRepository) Delete(ctx context.Context, id ID) error {
+func (r *mockEquationRepository) Delete(ctx context.Context, id formula.ID) error {
 	return nil
 }
 

@@ -1,10 +1,10 @@
-package math
+package formula
 
 type Expression struct {
 	ClassificationID uint
 	Elements []Element `json:"elements"`
-	IsCause  bool   `json:"isCause"`
-	IsEffect bool   `json:"isEffect"`
+	IsCause  bool      `json:"isCause"`
+	IsEffect bool      `json:"isEffect"`
 	Description string `json:"description"`
 }
 

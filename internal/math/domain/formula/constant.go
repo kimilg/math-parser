@@ -1,4 +1,4 @@
-package math
+package formula
 
 type Constant struct {
 	Name string `json:"name"` 

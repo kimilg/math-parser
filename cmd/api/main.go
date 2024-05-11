@@ -3,13 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
 	"log"
-	"math-parser/api/resource/math"
-	"math-parser/api/router"
 	"math-parser/config"
-	"math-parser/db"
+	"math-parser/internal/math/ports"
+	"math-parser/internal/math/service"
 	"net/http"
 	"os"
 	"os/signal"
@@ -17,27 +15,18 @@ import (
 	"time"
 )
 
-const fmtDBUrl = "postgres://%s:%s@%s:%d/%s?sslmode=%s"
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	
 	c := config.New()
 	ctx := context.Background()
-
-	dbString := fmt.Sprintf(fmtDBUrl, c.DB.Username, c.DB.Password, c.DB.Host, c.DB.Port, c.DB.DBName, false)
-	conn, err := pgx.Connect(ctx, dbString)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close(ctx)
+	app, cleanup := service.NewApplication(ctx, c)
+	defer cleanup()
 	
-	queries := db.New(conn)
-	repository := math.NewRepository(queries)
-	r := router.New(repository)
-
+	r := ports.New(ports.NewHttpServer(app))
 	s := &http.Server{
 		Addr:         fmt.Sprintf(":%d", c.Server.Port),
 		Handler:      r,

@@ -1,4 +1,4 @@
-package math
+package formula
 
 import (
 	"github.com/antlr4-go/antlr/v4"

@@ -1,4 +1,4 @@
-package math
+package formula
 
 const (
 	PLUS byte = iota

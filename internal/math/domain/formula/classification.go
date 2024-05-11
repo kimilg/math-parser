@@ -1,12 +1,12 @@
-package math
+package formula
 
 type Classification struct {
-	Category string `json:"category"`
-	Type     string `json:"type"`
-	IsCause  bool   `json:"isCause"`
-	IsEffect bool   `json:"isEffect"`
+	Category string               `json:"category"`
+	Type     string               `json:"type"`
+	IsCause  bool                 `json:"isCause"`
+	IsEffect bool             `json:"isEffect"`
 	Expressions []Expression `json:"expressions"`
-	Variables []Variable `json:"variables"`
+	Variables []Variable     `json:"variables"`
 }
 
 type Classifications []*Classification
