@@ -28,10 +28,10 @@ func NewEquationMemory(repo Repository) EquationMemory {
 func (e *EquationMemory) Load(ctx context.Context) error {
 	equations, err := e.repo.List(ctx)
 	if err != nil {
-		return fmt.Errorf("Error during loading equation repository: %v", err)
+		return fmt.Errorf("error during loading equation repository: %v", err)
 	}
 	for _, equation := range equations {
-		expression := ParseEquation(equation.Id, equation.Value)
+		expression := ParseEquation(equation)
 		e.equations[expression.EquationId] = expression
 	}
 	return nil

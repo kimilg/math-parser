@@ -27,7 +27,7 @@ func NewSpreadRandomFieldHandler(repo formula.Repository, equationMemory formula
 }
 
 func (s spreadRandomFieldHandler) Handle(ctx context.Context, cmd SpreadRandomField) error {
-	fieldData := field.NewField()
+	Fields := field.NewFields()
 	expressions, err := s.equationMemory.List()
 	if err != nil {
 		return fmt.Errorf("fail to get equationMemory: %w", err)

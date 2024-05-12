@@ -6,14 +6,22 @@ const (
 )
 var MaxPosition Position = Position{Max, Max, Max}
 
+type DFPosition struct {
+	DPosition Position
+	FPosition Position
+}
 type Field struct {
-	Force map[Position]Force
-	Displacement map[Position]Displacement
+	DPosition Position
+	Displacement Vector
+	FPosition Position
+	Force Vector
+}
+type Fields struct {
+	FieldMap map[DFPosition]Field
 }
 
-func NewField() Field {
-	return Field{
-		Force:       make(map[Position]Force, PositionMax),
-		Displacement: make(map[Position]Displacement, PositionMax),
+func NewFields() Fields {
+	return Fields{
+		FieldMap:	make(map[DFPosition]Field),
 	}
 }

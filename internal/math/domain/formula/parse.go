@@ -15,7 +15,7 @@ func ParseEquation(eq *Equation) *Expression {
 	p := parser.NewFormulaParser(stream)
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 
-	var formulaVisitor FormulaVisitorImpl
+	formulaVisitor := FormulaVisitorImpl{depth: 0}
 	eqn := formulaVisitor.Visit(p.Equation())
 	if eqn == nil {
 		fmt.Errorf("nil value")

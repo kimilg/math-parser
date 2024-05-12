@@ -1,9 +1,15 @@
 package field
 
 type Pos int
-type Vector struct {
+
+type Coord interface {}
+
+type Position struct {
 	X, Y, Z Pos
 }
-type Position Vector
-type Force Vector
-type Displacement Vector
+
+type Vector struct {
+	X, Y, Z Pos
+	Group string
+}
+

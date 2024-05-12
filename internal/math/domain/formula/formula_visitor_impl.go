@@ -9,6 +9,7 @@ import (
 
 type FormulaVisitorImpl struct {
 	*parser.BaseFormulaVisitor
+	depth int
 }
 
 func (v *FormulaVisitorImpl) Visit(tree antlr.ParseTree) interface{} {
@@ -88,7 +89,9 @@ func (v *FormulaVisitorImpl) VisitVariable(ctx *parser.VariableContext) interfac
 	}
 	if ctx.ArgumentTail() != nil && ctx.ArgumentTail().OPENPAREN() != nil {
 		str = ctx.ArgumentTail().GetText()
-		arguments = ctx.ArgumentTail().Accept(v).([]*Expression)	
+		v.depth += 1
+		arguments = ctx.ArgumentTail().Accept(v).([]*Expression)
+		v.depth -= 1
 	}
 	
 	variable := Variable{
@@ -96,6 +99,7 @@ func (v *FormulaVisitorImpl) VisitVariable(ctx *parser.VariableContext) interfac
 		Subscripts:  subscripts,
 		Arguments:   arguments,
 		Description: "description..",
+		IsArgument:  v.depth == 0,
 	}
 	
 	return variable
