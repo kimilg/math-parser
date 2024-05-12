@@ -27,6 +27,7 @@ func NewApplication(ctx context.Context, c *config.Conf) (app.Application, func(
 	return app.Application{
 		Commands: app.Commands{
 			Parse: command.NewParseHandler(repository),
+			SpreadRandomField: command.NewSpreadRandomFieldHandler(repository),
 		},
 		Queries: app.Queries{
 			

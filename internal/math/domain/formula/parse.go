@@ -6,7 +6,7 @@ import (
 	"math-parser/parser"
 )
 
-func ParseEquation(value string) *Expression {
+func ParseEquation(id ID, value string) *Expression {
 	is := antlr.NewInputStream(value)
 
 	lexer := parser.NewFormulaLexer(is)
@@ -20,5 +20,7 @@ func ParseEquation(value string) *Expression {
 	if eqn == nil {
 		fmt.Errorf("nil value")
 	}
-	return eqn.(*Expression)
+	exprEquation := eqn.(*Expression)
+	exprEquation.EquationId = id
+	return exprEquation
 }

@@ -9,6 +9,7 @@ type Application struct {
 
 type Commands struct {
 	Parse command.ParseHandler
+	SpreadRandomField command.SpreadRandomFieldHandler
 }
 
 type Queries struct {

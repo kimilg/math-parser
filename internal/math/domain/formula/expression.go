@@ -1,6 +1,7 @@
 package formula
 
 type Expression struct {
+	EquationId ID
 	ClassificationID uint
 	Elements []Element `json:"elements"`
 	IsCause  bool      `json:"isCause"`

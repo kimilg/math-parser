@@ -37,6 +37,10 @@ func (s *HttpServer) Parse(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func (s *HttpServer) spreadRandomField(w http.ResponseWriter, r *http.Request) {
+	
+}
+
 func (s *HttpServer) AddVariable(w http.ResponseWriter, r *http.Request) {
 	variable := &formula.Variable{}
 	if err := json.NewDecoder(r.Body).Decode(variable); err != nil {

@@ -23,7 +23,7 @@ func NewParseHandler(repo formula.Repository) decorator.CommandHandler[Parse] {
 		parseHandler{repo: repo})
 }
 
-func (p parseHandler) Handle(ctx context.Context, cmd Parse) (error) {
+func (p parseHandler) Handle(ctx context.Context, cmd Parse) error {
 	eq, err := p.repo.GetFromValue(ctx, cmd.Equation)
 	if eq == nil && err != nil {
 		eq, err = p.repo.Create(ctx, cmd.Equation)
@@ -33,7 +33,7 @@ func (p parseHandler) Handle(ctx context.Context, cmd Parse) (error) {
 	}
 	fmt.Printf("equation Id: %d, Value: %s\n", eq.Id, eq.Value)
 
-	equation := formula.ParseEquation(eq.Value)
+	equation := formula.ParseEquation(eq.Id, eq.Value)
 	print(equation.Description)
 	
 	return nil
