@@ -23,9 +23,9 @@ func NewParseHandler(repo formula.Repository) decorator.CommandHandler[Parse] {
 		parseHandler{repo: repo})
 }
 
-func (p parseHandler) Handle(ctx context.Context, cmd Parse) (err error) {
+func (p parseHandler) Handle(ctx context.Context, cmd Parse) (error) {
 	eq, err := p.repo.GetFromValue(ctx, cmd.Equation)
-	if err == nil {
+	if eq == nil && err != nil {
 		eq, err = p.repo.Create(ctx, cmd.Equation)
 		if err != nil {
 			return fmt.Errorf("internal server error")

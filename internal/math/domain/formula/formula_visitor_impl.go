@@ -20,7 +20,7 @@ func (v *FormulaVisitorImpl) Visit(tree antlr.ParseTree) interface{} {
 }
 
 func (v *FormulaVisitorImpl) VisitEquation(ctx *parser.EquationContext) interface{} {
-	return Expression{
+	return &Expression{
 		Elements: []Element{
 			ctx.Expr(0).Accept(v),
 			EQUAL,
@@ -35,9 +35,9 @@ func (v *FormulaVisitorImpl) VisitExpr(ctx *parser.ExprContext) interface{} {
 		return ctx.Expr(0).Accept(v)
 	}
 	if ctx.Constant() != nil {
-		return Expression{
+		return &Expression{
 			Elements: []Element{
-				Constant{
+				&Constant{
 					Value: ctx.Constant().Accept(v).(float64),
 				},
 			},
@@ -45,7 +45,7 @@ func (v *FormulaVisitorImpl) VisitExpr(ctx *parser.ExprContext) interface{} {
 		}
 	}
 	if ctx.Variable() != nil {
-		return Expression{
+		return &Expression{
 			Elements: []Element{
 				ctx.Variable().Accept(v).(Variable),
 			},
@@ -80,7 +80,7 @@ func (v *FormulaVisitorImpl) VisitVariable(ctx *parser.VariableContext) interfac
 	
 	name := ctx.GeneralId().Accept(v).(string)
 	var subscripts []rune
-	var arguments []Expression
+	var arguments []*Expression
 	
 	if ctx.SubscriptTail() != nil && ctx.SubscriptTail().SUBSCRIPT() != nil{
 		str = ctx.SubscriptTail().GetText()
@@ -88,7 +88,7 @@ func (v *FormulaVisitorImpl) VisitVariable(ctx *parser.VariableContext) interfac
 	}
 	if ctx.ArgumentTail() != nil && ctx.ArgumentTail().OPENPAREN() != nil {
 		str = ctx.ArgumentTail().GetText()
-		arguments = ctx.ArgumentTail().Accept(v).([]Expression)	
+		arguments = ctx.ArgumentTail().Accept(v).([]*Expression)	
 	}
 	
 	variable := Variable{
@@ -120,19 +120,19 @@ func (v *FormulaVisitorImpl) VisitSubscriptTail(ctx *parser.SubscriptTailContext
 
 func (v *FormulaVisitorImpl) VisitArgumentTail(ctx *parser.ArgumentTailContext) interface{} {
 	if ctx.SEMICOLON() == nil {
-		return ctx.ArgumentList(0).Accept(v).([]Expression)
+		return ctx.ArgumentList(0).Accept(v).([]*Expression)
 	}
 	
 	str := ctx.ArgumentList(0).GetText()
 	println(str)
-	left := ctx.ArgumentList(0).Accept(v).([]Expression)
+	left := ctx.ArgumentList(0).Accept(v).([]*Expression)
 	for _, expr := range left {
 		expr.IsEffect = true
 	}
 
 	str = ctx.ArgumentList(1).GetText()
 	println(str)
-	right := ctx.ArgumentList(1).Accept(v).([]Expression)
+	right := ctx.ArgumentList(1).Accept(v).([]*Expression)
 	for _, expr := range right {
 		expr.IsCause = true
 	}
@@ -165,9 +165,9 @@ func (v *FormulaVisitorImpl) VisitConstant(ctx *parser.ConstantContext) interfac
 }
 
 func (v *FormulaVisitorImpl) VisitFraction(ctx *parser.FractionContext) interface{} {
-	return Expression{Elements: []Element{
+	return &Expression{Elements: []Element{
 		ctx.Expr(0).Accept(v),
-		Operator{Value: DIV},
+		&Operator{Value: DIV},
 		ctx.Expr(1).Accept(v),
 	}}
 }
@@ -178,17 +178,17 @@ func (v *FormulaVisitorImpl) VisitBinaryOperator(ctx *parser.BinaryOperatorConte
 }
 
 func (v *FormulaVisitorImpl) VisitArgumentList(ctx *parser.ArgumentListContext) interface{} {
-	expressions := []Expression{ctx.Expr().Accept(v).(Expression)}
+	expressions := []*Expression{ctx.Expr().Accept(v).(*Expression)}
 	if ctx.ArgumentListTail() != nil {
-		expressions = append(expressions, ctx.ArgumentListTail().Accept(v).([]Expression)...)
+		expressions = append(expressions, ctx.ArgumentListTail().Accept(v).([]*Expression)...)
 	}
 	return expressions
 }
 
 func (v *FormulaVisitorImpl) VisitArgumentListTail(ctx *parser.ArgumentListTailContext) interface{} {
-	expressions := []Expression{ctx.Expr().Accept(v).(Expression)}
+	expressions := []*Expression{ctx.Expr().Accept(v).(*Expression)}
 	if ctx.ArgumentListTail() != nil && ctx.ArgumentListTail().COMMA() != nil {
-		expressions = append(expressions, ctx.ArgumentListTail().Accept(v).([]Expression)...)
+		expressions = append(expressions, ctx.ArgumentListTail().Accept(v).([]*Expression)...)
 	}
 	return expressions
 }
@@ -212,8 +212,8 @@ func (v *FormulaVisitorImpl) VisitGeneralIntLit(ctx *parser.GeneralIntLitContext
 	return nil
 }
 
-func (v *FormulaVisitorImpl) exprForBinaryOp(ctx *parser.ExprContext, operator byte) Expression {
-	return Expression{
+func (v *FormulaVisitorImpl) exprForBinaryOp(ctx *parser.ExprContext, operator byte) *Expression {
+	return &Expression{
 		Elements: []Element{
 			ctx.Expr(0).Accept(v),
 			operator,
