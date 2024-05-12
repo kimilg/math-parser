@@ -12,9 +12,9 @@ ORDER BY id;
 
 -- name: CreateEquation :one
 INSERT INTO equations (
-    value, created_at, updated_at
+    value, category, created_at, updated_at
 ) VALUES (
-    $1, current_timestamp, current_timestamp
+    $1, $2, current_timestamp, current_timestamp
  )
 RETURNING *;
 

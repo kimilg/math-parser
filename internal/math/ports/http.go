@@ -25,7 +25,7 @@ func (s *HttpServer) Parse(w http.ResponseWriter, r *http.Request) {
 	}
 	value := strings.TrimSpace(form.Value)
 	
-	err := s.app.Commands.Parse.Handle(r.Context(), command.Parse{Equation: value})
+	err := s.app.Commands.Parse.Handle(r.Context(), command.Parse{Equation: value, Category: form.Category})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

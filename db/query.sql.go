@@ -11,19 +11,25 @@ import (
 
 const createEquation = `-- name: CreateEquation :one
 INSERT INTO equations (
-    value, created_at, updated_at
+    value, category, created_at, updated_at
 ) VALUES (
-    $1, current_timestamp, current_timestamp
+    $1, $2, current_timestamp, current_timestamp
  )
-RETURNING id, value, created_at, updated_at, deleted_at
+RETURNING id, value, category, created_at, updated_at, deleted_at
 `
 
-func (q *Queries) CreateEquation(ctx context.Context, value string) (Equation, error) {
-	row := q.db.QueryRow(ctx, createEquation, value)
+type CreateEquationParams struct {
+	Value    string
+	Category string
+}
+
+func (q *Queries) CreateEquation(ctx context.Context, arg CreateEquationParams) (Equation, error) {
+	row := q.db.QueryRow(ctx, createEquation, arg.Value, arg.Category)
 	var i Equation
 	err := row.Scan(
 		&i.ID,
 		&i.Value,
+		&i.Category,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -42,7 +48,7 @@ func (q *Queries) DeleteEquation(ctx context.Context, id int64) error {
 }
 
 const getEquation = `-- name: GetEquation :one
-SELECT id, value, created_at, updated_at, deleted_at FROM equations
+SELECT id, value, category, created_at, updated_at, deleted_at FROM equations
 WHERE id = $1 LIMIT 1
 `
 
@@ -52,6 +58,7 @@ func (q *Queries) GetEquation(ctx context.Context, id int64) (Equation, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Value,
+		&i.Category,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -60,7 +67,7 @@ func (q *Queries) GetEquation(ctx context.Context, id int64) (Equation, error) {
 }
 
 const getEquationFromValue = `-- name: GetEquationFromValue :one
-SELECT id, value, created_at, updated_at, deleted_at FROM equations
+SELECT id, value, category, created_at, updated_at, deleted_at FROM equations
 WHERE value = $1 LIMIT 1
 `
 
@@ -70,6 +77,7 @@ func (q *Queries) GetEquationFromValue(ctx context.Context, value string) (Equat
 	err := row.Scan(
 		&i.ID,
 		&i.Value,
+		&i.Category,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -78,7 +86,7 @@ func (q *Queries) GetEquationFromValue(ctx context.Context, value string) (Equat
 }
 
 const listEquations = `-- name: ListEquations :many
-SELECT id, value, created_at, updated_at, deleted_at FROM equations
+SELECT id, value, category, created_at, updated_at, deleted_at FROM equations
 ORDER BY id
 `
 
@@ -94,6 +102,7 @@ func (q *Queries) ListEquations(ctx context.Context) ([]Equation, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Value,
+			&i.Category,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
@@ -112,7 +121,7 @@ const updateEquation = `-- name: UpdateEquation :one
 UPDATE equations
 set value=$2, updated_at=current_timestamp
 WHERE id=$1
-RETURNING id, value, created_at, updated_at, deleted_at
+RETURNING id, value, category, created_at, updated_at, deleted_at
 `
 
 type UpdateEquationParams struct {
@@ -126,6 +135,7 @@ func (q *Queries) UpdateEquation(ctx context.Context, arg UpdateEquationParams) 
 	err := row.Scan(
 		&i.ID,
 		&i.Value,
+		&i.Category,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,

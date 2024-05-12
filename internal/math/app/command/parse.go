@@ -9,6 +9,7 @@ import (
 
 type Parse struct {
 	Equation string
+	Category string
 }
 type ParseHandler decorator.CommandHandler[Parse]
 type parseHandler struct {
@@ -26,15 +27,15 @@ func NewParseHandler(repo formula.Repository) decorator.CommandHandler[Parse] {
 func (p parseHandler) Handle(ctx context.Context, cmd Parse) error {
 	eq, err := p.repo.GetFromValue(ctx, cmd.Equation)
 	if eq == nil && err != nil {
-		eq, err = p.repo.Create(ctx, cmd.Equation)
+		eq, err = p.repo.Create(ctx, cmd.Equation, cmd.Category)
 		if err != nil {
 			return fmt.Errorf("internal server error")
 		}
 	}
 	fmt.Printf("equation Id: %d, Value: %s\n", eq.Id, eq.Value)
 
-	equation := formula.ParseEquation(eq.Id, eq.Value)
-	print(equation.Description)
+	equationExpression := formula.ParseEquation(eq)
+	print(equationExpression.Description)
 	
 	return nil
 }

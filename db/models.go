@@ -11,6 +11,7 @@ import (
 type Equation struct {
 	ID        int64
 	Value     string
+	Category  string
 	CreatedAt pgtype.Timestamp
 	UpdatedAt pgtype.Timestamp
 	DeletedAt pgtype.Timestamp

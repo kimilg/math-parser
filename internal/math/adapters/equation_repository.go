@@ -55,8 +55,8 @@ func (r *Repository) List(ctx context.Context) ([]*formula.Equation, error) {
 	return equations, nil
 }
 
-func (r *Repository) Create(ctx context.Context, value string) (*formula.Equation, error) {
-	eqn, err := r.queries.CreateEquation(ctx, value)
+func (r *Repository) Create(ctx context.Context, value string, category string) (*formula.Equation, error) {
+	eqn, err := r.queries.CreateEquation(ctx, db.CreateEquationParams{Value: value, Category: category})
 	if err != nil {
 		return nil, fmt.Errorf("error creating equation: %w", err)
 	}

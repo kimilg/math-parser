@@ -10,6 +10,7 @@ import (
 	"math-parser/internal/math/adapters"
 	"math-parser/internal/math/app"
 	"math-parser/internal/math/app/command"
+	"math-parser/internal/math/domain/formula"
 )
 
 const fmtDBUrl = "postgres://%s:%s@%s:%d/%s?sslmode=%s"
@@ -23,11 +24,16 @@ func NewApplication(ctx context.Context, c *config.Conf) (app.Application, func(
 
 	queries := db.New(conn)
 	repository := adapters.NewRepository(queries)
+	equationMemory := formula.NewEquationMemory(repository)
+	err = equationMemory.Load(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
 	
 	return app.Application{
 		Commands: app.Commands{
 			Parse: command.NewParseHandler(repository),
-			SpreadRandomField: command.NewSpreadRandomFieldHandler(repository),
+			SpreadRandomField: command.NewSpreadRandomFieldHandler(repository, equationMemory),
 		},
 		Queries: app.Queries{
 			

@@ -3,6 +3,7 @@ package formula
 type Expression struct {
 	EquationId ID
 	ClassificationID uint
+	Category string
 	Elements []Element `json:"elements"`
 	IsCause  bool      `json:"isCause"`
 	IsEffect bool      `json:"isEffect"`
