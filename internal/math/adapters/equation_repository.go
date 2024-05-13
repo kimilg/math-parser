@@ -40,7 +40,7 @@ func (r *Repository) GetFromValue(ctx context.Context, value string) (*formula.E
 }
 
 func (r *Repository) List(ctx context.Context) ([]*formula.Equation, error) {
-	eqns, err := r.queries.ListEquations(ctx); 
+	eqns, err := r.queries.ListEquations(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error reading from database: %w", err)
 	}
