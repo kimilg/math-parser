@@ -157,16 +157,28 @@ WITH inserted_id AS (
         VALUES ($1, $2, current_timestamp, current_timestamp)
         ON CONFLICT (name, vcategory) DO NOTHING
         RETURNING id
+), 
+inserted_id_union AS (
+    SELECT id 
+    FROM inserted_id
+    UNION
+    SELECT v.id
+    FROM variable v
+    WHERE v.name = $1
+      AND v.vcategory = $2
+),
+eq_var AS (
+    INSERT INTO equation_variable (equation_id, variable_id)
+        VALUES ($3, (SELECT id FROM inserted_id_union))
+        ON CONFLICT (equation_id, variable_id) DO NOTHING
+        RETURNING equation_id, variable_id
 )
 
-INSERT INTO equation_variable (equation_id, variable_id)
-VALUES ($3, (
-    SELECT id FROM inserted_id
-    UNION
-    SELECT v.id FROM variable v WHERE v.name=$1 AND v.vcategory=$2
-    ))
-ON CONFLICT (equation_id, variable_id) DO NOTHING
-RETURNING equation_id, variable_id
+SELECT equation_id, variable_id FROM eq_var
+UNION 
+SELECT equation_id, variable_id FROM equation_variable ev
+    WHERE ev.equation_id = $3 AND
+          ev.variable_id = (SELECT id FROM inserted_id_union)
 `
 
 type InsertVariableParams struct {
@@ -175,9 +187,14 @@ type InsertVariableParams struct {
 	EquationID int64
 }
 
-func (q *Queries) InsertVariable(ctx context.Context, arg InsertVariableParams) (EquationVariable, error) {
+type InsertVariableRow struct {
+	EquationID int64
+	VariableID int64
+}
+
+func (q *Queries) InsertVariable(ctx context.Context, arg InsertVariableParams) (InsertVariableRow, error) {
 	row := q.db.QueryRow(ctx, insertVariable, arg.Name, arg.Vcategory, arg.EquationID)
-	var i EquationVariable
+	var i InsertVariableRow
 	err := row.Scan(&i.EquationID, &i.VariableID)
 	return i, err
 }

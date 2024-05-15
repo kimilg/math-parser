@@ -47,16 +47,28 @@ WITH inserted_id AS (
         VALUES ($1, $2, current_timestamp, current_timestamp)
         ON CONFLICT (name, vcategory) DO NOTHING
         RETURNING id
+), 
+inserted_id_union AS (
+    SELECT id 
+    FROM inserted_id
+    UNION
+    SELECT v.id
+    FROM variable v
+    WHERE v.name = $1
+      AND v.vcategory = $2
+),
+eq_var AS (
+    INSERT INTO equation_variable (equation_id, variable_id)
+        VALUES ($3, (SELECT id FROM inserted_id_union))
+        ON CONFLICT (equation_id, variable_id) DO NOTHING
+        RETURNING *
 )
 
-INSERT INTO equation_variable (equation_id, variable_id)
-VALUES ($3, (
-    SELECT id FROM inserted_id
-    UNION
-    SELECT v.id FROM variable v WHERE v.name=$1 AND v.vcategory=$2
-    ))
-ON CONFLICT (equation_id, variable_id) DO NOTHING
-RETURNING *;
+SELECT * FROM eq_var
+UNION 
+SELECT * FROM equation_variable ev
+    WHERE ev.equation_id = $3 AND
+          ev.variable_id = (SELECT id FROM inserted_id_union);
 
 -- name: UpdateEquation :one
 UPDATE equation
