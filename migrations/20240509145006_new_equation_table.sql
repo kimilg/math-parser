@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS variable
     id             BIGSERIAL PRIMARY KEY,
     name           text NOT NULL,
     vcategory      text NOT NULL,
+    UNIQUE         (name, vcategory),
     created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at     TIMESTAMP NULL

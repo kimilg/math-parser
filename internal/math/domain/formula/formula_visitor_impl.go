@@ -43,6 +43,7 @@ func (v *FormulaVisitorImpl) VisitExpr(ctx *parser.ExprContext) interface{} {
 				},
 			},
 			Description: "constant",
+			IsArgument:  v.depth == 0,
 		}
 	}
 	if ctx.Variable() != nil {
@@ -51,6 +52,7 @@ func (v *FormulaVisitorImpl) VisitExpr(ctx *parser.ExprContext) interface{} {
 				ctx.Variable().Accept(v).(Variable),
 			},
 			Description: "variable",
+			IsArgument:  v.depth == 0,
 		}
 	}
 	if ctx.Fraction() != nil {
@@ -99,7 +101,6 @@ func (v *FormulaVisitorImpl) VisitVariable(ctx *parser.VariableContext) interfac
 		Subscripts:  subscripts,
 		Arguments:   arguments,
 		Description: "description..",
-		IsArgument:  v.depth == 0,
 	}
 	
 	return variable
@@ -169,11 +170,14 @@ func (v *FormulaVisitorImpl) VisitConstant(ctx *parser.ConstantContext) interfac
 }
 
 func (v *FormulaVisitorImpl) VisitFraction(ctx *parser.FractionContext) interface{} {
-	return &Expression{Elements: []Element{
-		ctx.Expr(0).Accept(v),
-		&Operator{Value: DIV},
-		ctx.Expr(1).Accept(v),
-	}}
+	return &Expression{
+		Elements: []Element{
+			ctx.Expr(0).Accept(v),
+			&Operator{Value: DIV},
+			ctx.Expr(1).Accept(v),
+		},
+		IsArgument:  v.depth == 0,
+	}
 }
 
 
@@ -222,5 +226,7 @@ func (v *FormulaVisitorImpl) exprForBinaryOp(ctx *parser.ExprContext, operator b
 			ctx.Expr(0).Accept(v),
 			operator,
 			ctx.Expr(1).Accept(v),
-		}}
+		},
+		IsArgument:  v.depth == 0,
+	}
 }

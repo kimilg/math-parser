@@ -52,6 +52,7 @@ func (s spreadRandomFieldHandler) Handle(ctx context.Context, cmd SpreadRandomFi
 						for k = 0; k < field.Max; k++ {
 							displacementPosition := field.Position{i, j, k}
 							
+							print(Fields.FieldMap[field.DFPosition{displacementPosition, forcePosition}].Force.Y)
 							
 						}
 					}

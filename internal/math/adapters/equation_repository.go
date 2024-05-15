@@ -2,7 +2,9 @@ package adapters
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/jackc/pgx/v5/pgtype"
 	"math-parser/db"
 	"math-parser/internal/math/domain/formula"
 )
@@ -22,9 +24,19 @@ func (r *Repository) Get(ctx context.Context, id formula.ID) (*formula.Equation,
 	if err != nil {
 		return nil, fmt.Errorf("error reading from database: %w", err)
 	}
+	variables := []formula.Variable{}
+	err = json.Unmarshal(eqn.Variables, &variables)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling variables: %w", err)
+	}
+	
 	return &formula.Equation{
-		Id:    formula.ID(eqn.ID), 
+		Id:    formula.ID(eqn.ID),
 		Value: eqn.Value,
+		Category: eqn.Category,
+		Variables: variables,
+		Cause: pgtypeToString(eqn.Cause),
+		Effect: pgtypeToString(eqn.Effect),
 	}, nil
 }
 
@@ -33,9 +45,19 @@ func (r *Repository) GetFromValue(ctx context.Context, value string) (*formula.E
 	if err != nil {
 		return nil, fmt.Errorf("error reading from database: %w", err)
 	}
+	variables := []formula.Variable{}
+	err = json.Unmarshal(eqn.Variables, &variables)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling variables: %w", err)
+	}
+	
 	return &formula.Equation{
 		Id:    formula.ID(eqn.ID),
 		Value: eqn.Value,
+		Category: eqn.Category,
+		Variables: variables,
+		Cause: pgtypeToString(eqn.Cause),
+		Effect: pgtypeToString(eqn.Effect),
 	}, nil
 }
 
@@ -46,35 +68,78 @@ func (r *Repository) List(ctx context.Context) ([]*formula.Equation, error) {
 	}
 	var equations []*formula.Equation
 	for _, eqn := range eqns {
-		equations = append(equations, 
+		variables := []formula.Variable{}
+		err = json.Unmarshal(eqn.Variables, &variables)
+		if err != nil {
+			return nil, fmt.Errorf("error unmarshalling variables: %w", err)
+		}
+		
+		equations = append(equations,
 			&formula.Equation{
-			Id:    formula.ID(eqn.ID), 
-			Value: eqn.Value,
+				Id:    formula.ID(eqn.ID),
+				Value: eqn.Value,
+				Category: eqn.Category,
+				Variables: variables,
+				Cause: pgtypeToString(eqn.Cause),
+				Effect: pgtypeToString(eqn.Effect),
 			})
 	}
 	return equations, nil
 }
 
-func (r *Repository) Create(ctx context.Context, value string, category string) (*formula.Equation, error) {
-	eqn, err := r.queries.CreateEquation(ctx, db.CreateEquationParams{Value: value, Category: category})
+func (r *Repository) Insert(ctx context.Context, equation *formula.Equation) (*formula.Equation, error) {
+	eqn, err := r.queries.InsertEquation(ctx, 
+		db.InsertEquationParams{
+			Value: equation.Value, 
+			Category: equation.Category, 
+			Cause: pgtype.Text{String: equation.Cause, Valid: true},
+			Effect: pgtype.Text{String: equation.Effect, Valid: true},
+		})
 	if err != nil {
 		return nil, fmt.Errorf("error creating equation: %w", err)
 	}
-	return &formula.Equation{
-		Id:    formula.ID(eqn.ID),
-		Value: eqn.Value,
-	}, nil
+	
+	for _, variable := range equation.Variables {
+		_, err := r.queries.InsertVariable(ctx, 
+			db.InsertVariableParams{
+				Name: variable.Name,
+				Vcategory: variable.Vcategory,
+				EquationID: eqn.ID,
+			})
+		if err != nil {
+			return nil, fmt.Errorf("error inserting equation_variable: %w", err)
+		}
+	}
+
+	return equation, nil
 }
 
-func (r *Repository) Update(ctx context.Context, id formula.ID, value string) (*formula.Equation, error) {
-	eqn, err := r.queries.UpdateEquation(ctx, db.UpdateEquationParams{int64(id), value})
+func (r *Repository) Update(ctx context.Context, equation *formula.Equation) (*formula.Equation, error) {
+	eqn, err := r.queries.UpdateEquation(ctx, 
+		db.UpdateEquationParams{
+		ID: int64(equation.Id),
+		Value: equation.Value,
+		Category: equation.Category,
+		Cause: pgtype.Text{String: equation.Cause, Valid: true},
+		Effect: pgtype.Text{String: equation.Effect, Valid: true},
+		})
 	if err != nil {
 		return nil, fmt.Errorf("error updating equation: %w", err)
 	}
-	return &formula.Equation{
-		Id:    formula.ID(eqn.ID),
-		Value: eqn.Value,
-	}, nil
+
+	for _, variable := range equation.Variables {
+		_, err := r.queries.InsertVariable(ctx,
+			db.InsertVariableParams{
+				Name: variable.Name,
+				Vcategory: variable.Vcategory,
+				EquationID: eqn.ID,
+			})
+		if err != nil {
+			return nil, fmt.Errorf("error inserting equation_variable: %w", err)
+		}
+	}
+	
+	return equation, nil
 }
 
 func (r *Repository) Delete(ctx context.Context, id formula.ID) error {
@@ -83,5 +148,12 @@ func (r *Repository) Delete(ctx context.Context, id formula.ID) error {
 		return fmt.Errorf("error deleting equation: %w", err)
 	}
 	return nil
+}
+
+func pgtypeToString(text pgtype.Text) string {
+	if text.Valid {
+		return text.String
+	}
+	return ""
 }
 

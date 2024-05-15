@@ -12,6 +12,22 @@ type Equation struct {
 	ID        int64
 	Value     string
 	Category  string
+	Cause     pgtype.Text
+	Effect    pgtype.Text
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+	DeletedAt pgtype.Timestamp
+}
+
+type EquationVariable struct {
+	EquationID int64
+	VariableID int64
+}
+
+type Variable struct {
+	ID        int64
+	Name      string
+	Vcategory string
 	CreatedAt pgtype.Timestamp
 	UpdatedAt pgtype.Timestamp
 	DeletedAt pgtype.Timestamp

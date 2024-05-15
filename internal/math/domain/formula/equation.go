@@ -9,8 +9,11 @@ type ID int64
 
 type Equation struct {
 	Id    ID     `json:"id" form:"required"`
-	Value string `json:"equation" form:"required"`
+	Value string `json:"value" form:"required"`
 	Category string `json:"category" form:"required"`
+	Variables []Variable `json:"variables"`
+	Cause string `json:"cause"`
+	Effect string `json:"effect"`
 }
 
 type EquationMemory struct {

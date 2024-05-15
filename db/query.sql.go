@@ -7,38 +7,12 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createEquation = `-- name: CreateEquation :one
-INSERT INTO equations (
-    value, category, created_at, updated_at
-) VALUES (
-    $1, $2, current_timestamp, current_timestamp
- )
-RETURNING id, value, category, created_at, updated_at, deleted_at
-`
-
-type CreateEquationParams struct {
-	Value    string
-	Category string
-}
-
-func (q *Queries) CreateEquation(ctx context.Context, arg CreateEquationParams) (Equation, error) {
-	row := q.db.QueryRow(ctx, createEquation, arg.Value, arg.Category)
-	var i Equation
-	err := row.Scan(
-		&i.ID,
-		&i.Value,
-		&i.Category,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
-	)
-	return i, err
-}
-
 const deleteEquation = `-- name: DeleteEquation :exec
-DELETE FROM equations
+DELETE FROM equation
 WHERE id=$1
 `
 
@@ -47,37 +21,129 @@ func (q *Queries) DeleteEquation(ctx context.Context, id int64) error {
 	return err
 }
 
-const getEquation = `-- name: GetEquation :one
-SELECT id, value, category, created_at, updated_at, deleted_at FROM equations
-WHERE id = $1 LIMIT 1
+const deleteVariable = `-- name: DeleteVariable :exec
+DELETE FROM variable
+WHERE id=$1
 `
 
-func (q *Queries) GetEquation(ctx context.Context, id int64) (Equation, error) {
+func (q *Queries) DeleteVariable(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deleteVariable, id)
+	return err
+}
+
+const getEquation = `-- name: GetEquation :one
+SELECT e.id, e.value, e.category, e.cause, e.effect, e.created_at, e.updated_at, e.deleted_at,
+       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory))
+       FILTER (WHERE v.id IS NOT NULL) AS variables
+FROM equation e
+    LEFT OUTER JOIN equation_variable ev 
+        ON e.id = ev.equation_id 
+    LEFT OUTER JOIN variable v 
+        ON ev.variable_id = v.id
+WHERE e.id = $1 
+GROUP BY e.id
+LIMIT 1
+`
+
+type GetEquationRow struct {
+	ID        int64
+	Value     string
+	Category  string
+	Cause     pgtype.Text
+	Effect    pgtype.Text
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+	DeletedAt pgtype.Timestamp
+	Variables []byte
+}
+
+func (q *Queries) GetEquation(ctx context.Context, id int64) (GetEquationRow, error) {
 	row := q.db.QueryRow(ctx, getEquation, id)
-	var i Equation
+	var i GetEquationRow
 	err := row.Scan(
 		&i.ID,
 		&i.Value,
 		&i.Category,
+		&i.Cause,
+		&i.Effect,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.Variables,
 	)
 	return i, err
 }
 
 const getEquationFromValue = `-- name: GetEquationFromValue :one
-SELECT id, value, category, created_at, updated_at, deleted_at FROM equations
-WHERE value = $1 LIMIT 1
+SELECT e.id, e.value, e.category, e.cause, e.effect, e.created_at, e.updated_at, e.deleted_at,
+       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory))
+       FILTER (WHERE v.id IS NOT NULL) AS variables
+FROM equation e
+    LEFT OUTER JOIN equation_variable ev 
+        ON e.id = ev.equation_id 
+    LEFT OUTER JOIN variable v 
+        ON ev.variable_id = v.id
+WHERE e.value = $1
+GROUP BY e.id
+LIMIT 1
 `
 
-func (q *Queries) GetEquationFromValue(ctx context.Context, value string) (Equation, error) {
+type GetEquationFromValueRow struct {
+	ID        int64
+	Value     string
+	Category  string
+	Cause     pgtype.Text
+	Effect    pgtype.Text
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+	DeletedAt pgtype.Timestamp
+	Variables []byte
+}
+
+func (q *Queries) GetEquationFromValue(ctx context.Context, value string) (GetEquationFromValueRow, error) {
 	row := q.db.QueryRow(ctx, getEquationFromValue, value)
+	var i GetEquationFromValueRow
+	err := row.Scan(
+		&i.ID,
+		&i.Value,
+		&i.Category,
+		&i.Cause,
+		&i.Effect,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+		&i.Variables,
+	)
+	return i, err
+}
+
+const insertEquation = `-- name: InsertEquation :one
+INSERT INTO equation (value, category, cause, effect, created_at, updated_at) 
+VALUES ($1, $2, $3, $4, current_timestamp, current_timestamp)
+RETURNING id, value, category, cause, effect, created_at, updated_at, deleted_at
+`
+
+type InsertEquationParams struct {
+	Value    string
+	Category string
+	Cause    pgtype.Text
+	Effect   pgtype.Text
+}
+
+func (q *Queries) InsertEquation(ctx context.Context, arg InsertEquationParams) (Equation, error) {
+	row := q.db.QueryRow(ctx, insertEquation,
+		arg.Value,
+		arg.Category,
+		arg.Cause,
+		arg.Effect,
+	)
 	var i Equation
 	err := row.Scan(
 		&i.ID,
 		&i.Value,
 		&i.Category,
+		&i.Cause,
+		&i.Effect,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -85,27 +151,81 @@ func (q *Queries) GetEquationFromValue(ctx context.Context, value string) (Equat
 	return i, err
 }
 
-const listEquations = `-- name: ListEquations :many
-SELECT id, value, category, created_at, updated_at, deleted_at FROM equations
-ORDER BY id
+const insertVariable = `-- name: InsertVariable :one
+WITH inserted_id AS (
+    INSERT INTO variable (name, vcategory, created_at, updated_at)
+        VALUES ($1, $2, current_timestamp, current_timestamp)
+        ON CONFLICT (name, vcategory) DO NOTHING
+        RETURNING id
+)
+
+INSERT INTO equation_variable (equation_id, variable_id)
+VALUES ($3, (
+    SELECT id FROM inserted_id
+    UNION
+    SELECT v.id FROM variable v WHERE v.name=$1 AND v.vcategory=$2
+    ))
+ON CONFLICT (equation_id, variable_id) DO NOTHING
+RETURNING equation_id, variable_id
 `
 
-func (q *Queries) ListEquations(ctx context.Context) ([]Equation, error) {
+type InsertVariableParams struct {
+	Name       string
+	Vcategory  string
+	EquationID int64
+}
+
+func (q *Queries) InsertVariable(ctx context.Context, arg InsertVariableParams) (EquationVariable, error) {
+	row := q.db.QueryRow(ctx, insertVariable, arg.Name, arg.Vcategory, arg.EquationID)
+	var i EquationVariable
+	err := row.Scan(&i.EquationID, &i.VariableID)
+	return i, err
+}
+
+const listEquations = `-- name: ListEquations :many
+SELECT e.id, e.value, e.category, e.cause, e.effect, e.created_at, e.updated_at, e.deleted_at, 
+       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory)) 
+       FILTER (WHERE v.id IS NOT NULL) AS variables
+FROM equation e 
+    LEFT OUTER JOIN equation_variable ev 
+        ON e.id = ev.equation_id 
+    LEFT OUTER JOIN variable v 
+        ON ev.variable_id = v.id
+GROUP BY e.id
+ORDER BY e.id
+`
+
+type ListEquationsRow struct {
+	ID        int64
+	Value     string
+	Category  string
+	Cause     pgtype.Text
+	Effect    pgtype.Text
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+	DeletedAt pgtype.Timestamp
+	Variables []byte
+}
+
+func (q *Queries) ListEquations(ctx context.Context) ([]ListEquationsRow, error) {
 	rows, err := q.db.Query(ctx, listEquations)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Equation
+	var items []ListEquationsRow
 	for rows.Next() {
-		var i Equation
+		var i ListEquationsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Value,
 			&i.Category,
+			&i.Cause,
+			&i.Effect,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
+			&i.Variables,
 		); err != nil {
 			return nil, err
 		}
@@ -118,24 +238,35 @@ func (q *Queries) ListEquations(ctx context.Context) ([]Equation, error) {
 }
 
 const updateEquation = `-- name: UpdateEquation :one
-UPDATE equations
-set value=$2, updated_at=current_timestamp
+UPDATE equation
+SET value=$2, category=$3, cause=$4, effect=$5, updated_at=current_timestamp
 WHERE id=$1
-RETURNING id, value, category, created_at, updated_at, deleted_at
+RETURNING id, value, category, cause, effect, created_at, updated_at, deleted_at
 `
 
 type UpdateEquationParams struct {
-	ID    int64
-	Value string
+	ID       int64
+	Value    string
+	Category string
+	Cause    pgtype.Text
+	Effect   pgtype.Text
 }
 
 func (q *Queries) UpdateEquation(ctx context.Context, arg UpdateEquationParams) (Equation, error) {
-	row := q.db.QueryRow(ctx, updateEquation, arg.ID, arg.Value)
+	row := q.db.QueryRow(ctx, updateEquation,
+		arg.ID,
+		arg.Value,
+		arg.Category,
+		arg.Cause,
+		arg.Effect,
+	)
 	var i Equation
 	err := row.Scan(
 		&i.ID,
 		&i.Value,
 		&i.Category,
+		&i.Cause,
+		&i.Effect,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,

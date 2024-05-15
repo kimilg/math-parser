@@ -8,8 +8,7 @@ import (
 )
 
 type Parse struct {
-	Equation string
-	Category string
+	Equation *formula.Equation
 }
 type ParseHandler decorator.CommandHandler[Parse]
 type parseHandler struct {
@@ -25,11 +24,18 @@ func NewParseHandler(repo formula.Repository) decorator.CommandHandler[Parse] {
 }
 
 func (p parseHandler) Handle(ctx context.Context, cmd Parse) error {
-	eq, err := p.repo.GetFromValue(ctx, cmd.Equation)
+	eq, err := p.repo.GetFromValue(ctx, cmd.Equation.Value)
 	if eq == nil && err != nil {
-		eq, err = p.repo.Create(ctx, cmd.Equation, cmd.Category)
+		eq, err = p.repo.Insert(ctx, cmd.Equation)
 		if err != nil {
-			return fmt.Errorf("internal server error")
+			return fmt.Errorf("internal server error: %w", err)
+		}
+	}
+	if eq != nil {
+		cmd.Equation.Id = eq.Id
+		eq, err = p.repo.Update(ctx, cmd.Equation)
+		if err != nil {
+			return fmt.Errorf("internal server error: %w", err)
 		}
 	}
 	fmt.Printf("equation Id: %d, Value: %s\n", eq.Id, eq.Value)
