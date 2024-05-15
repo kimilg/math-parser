@@ -63,7 +63,6 @@ eq_var AS (
         ON CONFLICT (equation_id, variable_id) DO NOTHING
         RETURNING *
 )
-
 SELECT * FROM eq_var
 UNION 
 SELECT * FROM equation_variable ev
