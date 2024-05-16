@@ -24,7 +24,7 @@ func (r *Repository) Get(ctx context.Context, id formula.ID) (*formula.Equation,
 	if err != nil {
 		return nil, fmt.Errorf("error reading from database: %w", err)
 	}
-	variables := []formula.Variable{}
+	var variables []*formula.Variable
 	err = json.Unmarshal(eqn.Variables, &variables)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshalling variables: %w", err)
@@ -45,7 +45,7 @@ func (r *Repository) GetFromValue(ctx context.Context, value string) (*formula.E
 	if err != nil {
 		return nil, fmt.Errorf("error reading from database: %w", err)
 	}
-	variables := []formula.Variable{}
+	var variables []*formula.Variable
 	err = json.Unmarshal(eqn.Variables, &variables)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshalling variables: %w", err)
@@ -68,7 +68,7 @@ func (r *Repository) List(ctx context.Context) ([]*formula.Equation, error) {
 	}
 	var equations []*formula.Equation
 	for _, eqn := range eqns {
-		variables := []formula.Variable{}
+		var variables []*formula.Variable
 		err = json.Unmarshal(eqn.Variables, &variables)
 		if err != nil {
 			return nil, fmt.Errorf("error unmarshalling variables: %w", err)

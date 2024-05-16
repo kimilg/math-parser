@@ -6,7 +6,7 @@ type Variable struct {
 	Name       string `json:"name"`
 	Vcategory  string `json:"vcategory"`
 	Subscripts []rune `json:"subscripts"`
-	Arguments []*Expression `json:"arguments"`
+	Arguments []*Argument `json:"arguments"`
 	Description string     `json:"description"`
 }
 

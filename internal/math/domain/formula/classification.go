@@ -5,8 +5,8 @@ type Classification struct {
 	Type     string               `json:"type"`
 	IsCause  bool                 `json:"isCause"`
 	IsEffect bool             `json:"isEffect"`
-	Expressions []Expression `json:"expressions"`
-	Variables []Variable     `json:"variables"`
+	Expressions []*Expression `json:"expressions"`
+	Variables []*Variable     `json:"variables"`
 }
 
 type Classifications []*Classification

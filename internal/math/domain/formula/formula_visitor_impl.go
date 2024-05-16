@@ -29,6 +29,13 @@ func (v *FormulaVisitorImpl) VisitEquation(ctx *parser.EquationContext) interfac
 		}}
 }
 
+func (v *FormulaVisitorImpl) returnExprOrArgument(expr *Expression) interface{} {
+	if v.depth == 0 {
+		return expr
+	}
+	return &Argument{Expression: expr}
+}
+
 func (v *FormulaVisitorImpl) VisitExpr(ctx *parser.ExprContext) interface{} {
 	str := ctx.GetText()
 	println(str)
@@ -83,7 +90,7 @@ func (v *FormulaVisitorImpl) VisitVariable(ctx *parser.VariableContext) interfac
 	
 	name := ctx.GeneralId().Accept(v).(string)
 	var subscripts []rune
-	var arguments []*Expression
+	var arguments []*Argument
 	
 	if ctx.SubscriptTail() != nil && ctx.SubscriptTail().SUBSCRIPT() != nil{
 		str = ctx.SubscriptTail().GetText()
@@ -92,7 +99,7 @@ func (v *FormulaVisitorImpl) VisitVariable(ctx *parser.VariableContext) interfac
 	if ctx.ArgumentTail() != nil && ctx.ArgumentTail().OPENPAREN() != nil {
 		str = ctx.ArgumentTail().GetText()
 		v.depth += 1
-		arguments = ctx.ArgumentTail().Accept(v).([]*Expression)
+		arguments = ctx.ArgumentTail().Accept(v).([]*Argument)
 		v.depth -= 1
 	}
 	
@@ -125,26 +132,26 @@ func (v *FormulaVisitorImpl) VisitSubscriptTail(ctx *parser.SubscriptTailContext
 
 func (v *FormulaVisitorImpl) VisitArgumentTail(ctx *parser.ArgumentTailContext) interface{} {
 	if ctx.SEMICOLON() == nil {
-		return ctx.ArgumentList(0).Accept(v).([]*Expression)
+		return ctx.ArgumentList(0).Accept(v).([]*Argument)
 	}
 	
 	str := ctx.ArgumentList(0).GetText()
 	println(str)
-	left := ctx.ArgumentList(0).Accept(v).([]*Expression)
-	for _, expr := range left {
-		expr.IsEffect = true
+	left := ctx.ArgumentList(0).Accept(v).([]*Argument)
+	for _, argument := range left {
+		argument.IsEffect = true
 	}
 
 	str = ctx.ArgumentList(1).GetText()
 	println(str)
-	right := ctx.ArgumentList(1).Accept(v).([]*Expression)
-	for _, expr := range right {
-		expr.IsCause = true
+	right := ctx.ArgumentList(1).Accept(v).([]*Argument)
+	for _, argument := range right {
+		argument.IsCause = true
 	}
 	
-	expressions := left
-	expressions = append(expressions, right...)
-	return expressions
+	arguments := left
+	arguments = append(arguments, right...)
+	return arguments
 }
 
 
@@ -180,25 +187,24 @@ func (v *FormulaVisitorImpl) VisitFraction(ctx *parser.FractionContext) interfac
 	}
 }
 
-
 func (v *FormulaVisitorImpl) VisitBinaryOperator(ctx *parser.BinaryOperatorContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
 func (v *FormulaVisitorImpl) VisitArgumentList(ctx *parser.ArgumentListContext) interface{} {
-	expressions := []*Expression{ctx.Expr().Accept(v).(*Expression)}
+	arguments := []*Argument{{Expression: ctx.Expr().Accept(v).(*Expression)}}
 	if ctx.ArgumentListTail() != nil {
-		expressions = append(expressions, ctx.ArgumentListTail().Accept(v).([]*Expression)...)
+		arguments = append(arguments, ctx.ArgumentListTail().Accept(v).([]*Argument)...)
 	}
-	return expressions
+	return arguments
 }
 
 func (v *FormulaVisitorImpl) VisitArgumentListTail(ctx *parser.ArgumentListTailContext) interface{} {
-	expressions := []*Expression{ctx.Expr().Accept(v).(*Expression)}
+	arguments := []*Argument{{Expression: ctx.Expr().Accept(v).(*Expression)}}
 	if ctx.ArgumentListTail() != nil && ctx.ArgumentListTail().COMMA() != nil {
-		expressions = append(expressions, ctx.ArgumentListTail().Accept(v).([]*Expression)...)
+		arguments = append(arguments, ctx.ArgumentListTail().Accept(v).([]*Argument)...)
 	}
-	return expressions
+	return arguments
 }
 
 func (v *FormulaVisitorImpl) VisitGeneralIntLit(ctx *parser.GeneralIntLitContext) interface{} {
