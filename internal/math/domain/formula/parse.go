@@ -18,7 +18,7 @@ func ParseEquation(eq *Equation) *Expression {
 	formulaVisitor := FormulaVisitorImpl{depth: 0}
 	eqn := formulaVisitor.Visit(p.Equation())
 	if eqn == nil {
-		fmt.Errorf("nil value")
+		_ = fmt.Errorf("nil value")
 	}
 	exprEquation := eqn.(*Expression)
 	exprEquation.EquationId = eq.Id

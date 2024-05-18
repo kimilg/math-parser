@@ -28,6 +28,7 @@ type Variable struct {
 	ID        int64
 	Name      string
 	Vcategory string
+	Arguments []byte
 	CreatedAt pgtype.Timestamp
 	UpdatedAt pgtype.Timestamp
 	DeletedAt pgtype.Timestamp

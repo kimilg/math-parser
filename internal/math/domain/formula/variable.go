@@ -10,3 +10,6 @@ type Variable struct {
 	Description string     `json:"description"`
 }
 
+type VariableStringArguments struct {
+	
+}

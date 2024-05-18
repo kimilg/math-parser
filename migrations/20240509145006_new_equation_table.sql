@@ -3,10 +3,10 @@
 CREATE TABLE IF NOT EXISTS equation
 (
     id             BIGSERIAL PRIMARY KEY,
-    value          text NOT NULL,
-    category       text NOT NULL,
-    cause          text NULL,
-    effect         text NULL,
+    value          TEXT NOT NULL,
+    category       TEXT NOT NULL,
+    cause          TEXT NULL,
+    effect         TEXT NULL,
     created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at     TIMESTAMP NULL
@@ -14,8 +14,9 @@ CREATE TABLE IF NOT EXISTS equation
 CREATE TABLE IF NOT EXISTS variable
 (
     id             BIGSERIAL PRIMARY KEY,
-    name           text NOT NULL,
-    vcategory      text NOT NULL,
+    name           TEXT NOT NULL,
+    vcategory      TEXT NOT NULL,
+    arguments      JSONB NOT NULL,
     UNIQUE         (name, vcategory),
     created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

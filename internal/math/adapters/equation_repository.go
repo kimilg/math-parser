@@ -100,10 +100,15 @@ func (r *Repository) Insert(ctx context.Context, equation *formula.Equation) (*f
 	}
 	
 	for _, variable := range equation.Variables {
-		_, err := r.queries.InsertVariable(ctx, 
+		data, err := json.Marshal(variable.Arguments)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling variable.Arguments: %w", err)
+		}
+		_, err = r.queries.InsertVariable(ctx, 
 			db.InsertVariableParams{
 				Name: variable.Name,
 				Vcategory: variable.Vcategory,
+				Arguments: data,
 				EquationID: eqn.ID,
 			})
 		if err != nil {
@@ -128,10 +133,15 @@ func (r *Repository) Update(ctx context.Context, equation *formula.Equation) (*f
 	}
 
 	for _, variable := range equation.Variables {
-		_, err := r.queries.InsertVariable(ctx,
+		data, err := json.Marshal(variable.Arguments)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling variable.Arguments: %w", err)
+		}
+		_, err = r.queries.InsertVariable(ctx,
 			db.InsertVariableParams{
 				Name: variable.Name,
 				Vcategory: variable.Vcategory,
+				Arguments: data,
 				EquationID: eqn.ID,
 			})
 		if err != nil {

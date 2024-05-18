@@ -1,6 +1,6 @@
 -- name: GetEquation :one
 SELECT e.*,
-       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory))
+       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory, 'arguments', v.arguments))
        FILTER (WHERE v.id IS NOT NULL) AS variables
 FROM equation e
     LEFT OUTER JOIN equation_variable ev 
@@ -13,7 +13,7 @@ LIMIT 1;
 
 -- name: GetEquationFromValue :one
 SELECT e.*,
-       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory))
+       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory, 'arguments', v.arguments))
        FILTER (WHERE v.id IS NOT NULL) AS variables
 FROM equation e
     LEFT OUTER JOIN equation_variable ev 
@@ -26,7 +26,7 @@ LIMIT 1;
 
 -- name: ListEquations :many
 SELECT e.*, 
-       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory)) 
+       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory, 'arguments', v.arguments)) 
        FILTER (WHERE v.id IS NOT NULL) AS variables
 FROM equation e 
     LEFT OUTER JOIN equation_variable ev 
@@ -43,8 +43,8 @@ RETURNING *;
 
 -- name: InsertVariable :one
 WITH inserted_id AS (
-    INSERT INTO variable (name, vcategory, created_at, updated_at)
-        VALUES ($1, $2, current_timestamp, current_timestamp)
+    INSERT INTO variable (name, vcategory, arguments, created_at, updated_at)
+        VALUES ($1, $2, $3, current_timestamp, current_timestamp)
         ON CONFLICT (name, vcategory) DO NOTHING
         RETURNING id
 ), 
@@ -59,14 +59,14 @@ inserted_id_union AS (
 ),
 eq_var AS (
     INSERT INTO equation_variable (equation_id, variable_id)
-        VALUES ($3, (SELECT id FROM inserted_id_union))
+        VALUES ($4, (SELECT id FROM inserted_id_union))
         ON CONFLICT (equation_id, variable_id) DO NOTHING
         RETURNING *
 )
 SELECT * FROM eq_var
 UNION 
 SELECT * FROM equation_variable ev
-    WHERE ev.equation_id = $3 AND
+    WHERE ev.equation_id = $4 AND
           ev.variable_id = (SELECT id FROM inserted_id_union);
 
 -- name: UpdateEquation :one

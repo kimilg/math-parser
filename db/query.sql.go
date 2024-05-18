@@ -33,7 +33,7 @@ func (q *Queries) DeleteVariable(ctx context.Context, id int64) error {
 
 const getEquation = `-- name: GetEquation :one
 SELECT e.id, e.value, e.category, e.cause, e.effect, e.created_at, e.updated_at, e.deleted_at,
-       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory))
+       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory, 'arguments', v.arguments))
        FILTER (WHERE v.id IS NOT NULL) AS variables
 FROM equation e
     LEFT OUTER JOIN equation_variable ev 
@@ -76,7 +76,7 @@ func (q *Queries) GetEquation(ctx context.Context, id int64) (GetEquationRow, er
 
 const getEquationFromValue = `-- name: GetEquationFromValue :one
 SELECT e.id, e.value, e.category, e.cause, e.effect, e.created_at, e.updated_at, e.deleted_at,
-       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory))
+       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory, 'arguments', v.arguments))
        FILTER (WHERE v.id IS NOT NULL) AS variables
 FROM equation e
     LEFT OUTER JOIN equation_variable ev 
@@ -153,8 +153,8 @@ func (q *Queries) InsertEquation(ctx context.Context, arg InsertEquationParams) 
 
 const insertVariable = `-- name: InsertVariable :one
 WITH inserted_id AS (
-    INSERT INTO variable (name, vcategory, created_at, updated_at)
-        VALUES ($1, $2, current_timestamp, current_timestamp)
+    INSERT INTO variable (name, vcategory, arguments, created_at, updated_at)
+        VALUES ($1, $2, $3, current_timestamp, current_timestamp)
         ON CONFLICT (name, vcategory) DO NOTHING
         RETURNING id
 ), 
@@ -169,21 +169,21 @@ inserted_id_union AS (
 ),
 eq_var AS (
     INSERT INTO equation_variable (equation_id, variable_id)
-        VALUES ($3, (SELECT id FROM inserted_id_union))
+        VALUES ($4, (SELECT id FROM inserted_id_union))
         ON CONFLICT (equation_id, variable_id) DO NOTHING
         RETURNING equation_id, variable_id
 )
-
 SELECT equation_id, variable_id FROM eq_var
 UNION 
 SELECT equation_id, variable_id FROM equation_variable ev
-    WHERE ev.equation_id = $3 AND
+    WHERE ev.equation_id = $4 AND
           ev.variable_id = (SELECT id FROM inserted_id_union)
 `
 
 type InsertVariableParams struct {
 	Name       string
 	Vcategory  string
+	Arguments  []byte
 	EquationID int64
 }
 
@@ -193,7 +193,12 @@ type InsertVariableRow struct {
 }
 
 func (q *Queries) InsertVariable(ctx context.Context, arg InsertVariableParams) (InsertVariableRow, error) {
-	row := q.db.QueryRow(ctx, insertVariable, arg.Name, arg.Vcategory, arg.EquationID)
+	row := q.db.QueryRow(ctx, insertVariable,
+		arg.Name,
+		arg.Vcategory,
+		arg.Arguments,
+		arg.EquationID,
+	)
 	var i InsertVariableRow
 	err := row.Scan(&i.EquationID, &i.VariableID)
 	return i, err
@@ -201,7 +206,7 @@ func (q *Queries) InsertVariable(ctx context.Context, arg InsertVariableParams) 
 
 const listEquations = `-- name: ListEquations :many
 SELECT e.id, e.value, e.category, e.cause, e.effect, e.created_at, e.updated_at, e.deleted_at, 
-       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory)) 
+       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory, 'arguments', v.arguments)) 
        FILTER (WHERE v.id IS NOT NULL) AS variables
 FROM equation e 
     LEFT OUTER JOIN equation_variable ev 

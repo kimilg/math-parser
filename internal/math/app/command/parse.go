@@ -30,12 +30,13 @@ func (p parseHandler) Handle(ctx context.Context, cmd Parse) error {
 		if err != nil {
 			return fmt.Errorf("internal server error: %w", err)
 		}
-	}
-	if eq != nil {
-		cmd.Equation.Id = eq.Id
-		eq, err = p.repo.Update(ctx, cmd.Equation)
-		if err != nil {
-			return fmt.Errorf("internal server error: %w", err)
+	} else {
+		if eq != nil {
+			cmd.Equation.Id = eq.Id
+			eq, err = p.repo.Update(ctx, cmd.Equation)
+			if err != nil {
+				return fmt.Errorf("internal server error: %w", err)
+			}	
 		}
 	}
 	fmt.Printf("equation Id: %d, Value: %s\n", eq.Id, eq.Value)
