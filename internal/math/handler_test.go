@@ -3,7 +3,10 @@ package math
 import (
 	"context"
 	"encoding/json"
+	"github.com/gavv/httpexpect/v2"
 	"math-parser/internal/math/domain/formula"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -67,5 +70,21 @@ func (r *mockEquationRepository) Delete(ctx context.Context, id formula.ID) erro
 }
 
 func TestParse(t *testing.T) {
-	
+	equation := "G_{nm}(\\xi_2, \\tau; \\xi_1, 0)=G_{mn}(\\xi_1, \\tau; \\xi_2, 0)"
+
+	repo := &mockEquationRepository{}
+	mathAPI := New(repo)
+	handler := requestlog.NewHandler(mathAPI.Parse)
+
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	e := httpexpect.Default(t, server.URL)
+
+	eqn := map[string]interface{} {
+		"equation": equation,
+	}
+	e.POST("/parse").WithJSON(eqn).
+		Expect().
+		Status(http.StatusOK)
 }

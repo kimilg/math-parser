@@ -1,20 +1,20 @@
 package formula
 
 type Expression struct {
-	EquationId ID
-	ClassificationID uint
-	Category string
-	Elements []Element `json:"elements"`
-	IsCause  bool      `json:"isCause"`
-	IsEffect bool      `json:"isEffect"`
-	Description string `json:"description"`
-	IsArgument  bool
+	EquationId ID	      `json:"equationId,omitempty"`
+	ClassificationID uint `json:"classificationId,omitempty"`
+	Category string	      `json:"category,omitempty"`
+	Elements []Element    `json:"elements,omitempty"`
+	IsCause  bool         `json:"isCause,omitempty"`
+	IsEffect bool         `json:"isEffect,omitempty"`
+	Description string    `json:"description,omitempty"`
+	IsArgument  bool      `json:"isArgument,omitempty"`
 }
 
 type Argument struct {
-	*Expression
-	Seq uint
-	SubCategory string
+	*Expression			`json:"expression,omitempty"`
+	Seq uint		    `json:"seq,omitempty"`
+	SubCategory string  `json:"subCategory,omitempty"`
 }
 
 type ExpressionsForm struct {

@@ -1,13 +1,13 @@
 package formula
 
 type Variable struct {
-	Id ID `json:"id"`
-	ClassificationID uint
-	Name       string `json:"name"`
-	Vcategory  string `json:"vcategory"`
-	Subscripts []rune `json:"subscripts"`
-	Arguments []*Argument `json:"arguments"`
-	Description string     `json:"description"`
+	Id ID 				  `json:"id,omitempty"`
+	ClassificationID uint `json:"classificationId,omitempty"`
+	Name       string     `json:"name,omitempty"`
+	Vcategory  string     `json:"vcategory,omitempty"`
+	Subscripts []rune 	  `json:"subscripts,omitempty"`
+	Arguments []*Argument `json:"arguments,omitempty"`
+	Description string    `json:"description,omitempty"`
 }
 
 type VariableStringArguments struct {
