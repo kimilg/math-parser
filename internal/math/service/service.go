@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5"
 	"log"
 	"math-parser/config"
 	"math-parser/db"
@@ -11,6 +10,8 @@ import (
 	"math-parser/internal/math/app"
 	"math-parser/internal/math/app/command"
 	"math-parser/internal/math/domain/formula"
+
+	"github.com/jackc/pgx/v5"
 )
 
 const fmtDBUrl = "postgres://%s:%s@%s:%d/%s?sslmode=%s"
@@ -29,16 +30,14 @@ func NewApplication(ctx context.Context, c *config.Conf) (app.Application, func(
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	return app.Application{
-		Commands: app.Commands{
-			Parse: command.NewParseHandler(repository),
-			SpreadRandomField: command.NewSpreadRandomFieldHandler(repository, equationMemory),
-		},
-		Queries: app.Queries{
-			
-		},
-	}, func() {
-			_ = conn.Close(ctx)	
+			Commands: app.Commands{
+				Parse:             command.NewParseHandler(repository, equationMemory),
+				SpreadRandomField: command.NewSpreadRandomFieldHandler(repository, equationMemory),
+			},
+			Queries: app.Queries{},
+		}, func() {
+			_ = conn.Close(ctx)
 		}
 }

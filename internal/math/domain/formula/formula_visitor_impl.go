@@ -2,9 +2,10 @@ package formula
 
 import (
 	"fmt"
-	"github.com/antlr4-go/antlr/v4"
 	"math-parser/parser"
 	"strconv"
+
+	"github.com/antlr4-go/antlr/v4"
 )
 
 type FormulaVisitorImpl struct {
@@ -80,19 +81,19 @@ func (v *FormulaVisitorImpl) VisitExpr(ctx *parser.ExprContext) interface{} {
 	if ctx.MINUS() != nil {
 		return v.exprForBinaryOp(ctx, MINUS)
 	}
-	
+
 	return nil
 }
 
 func (v *FormulaVisitorImpl) VisitVariable(ctx *parser.VariableContext) interface{} {
 	str := ctx.GetText()
 	println(str)
-	
+
 	name := ctx.GeneralId().Accept(v).(string)
 	var subscripts []rune
 	var arguments []*Argument
-	
-	if ctx.SubscriptTail() != nil && ctx.SubscriptTail().SUBSCRIPT() != nil{
+
+	if ctx.SubscriptTail() != nil && ctx.SubscriptTail().SUBSCRIPT() != nil {
 		str = ctx.SubscriptTail().GetText()
 		subscripts = []rune(ctx.SubscriptTail().Accept(v).(string))
 	}
@@ -102,14 +103,14 @@ func (v *FormulaVisitorImpl) VisitVariable(ctx *parser.VariableContext) interfac
 		arguments = ctx.ArgumentTail().Accept(v).([]*Argument)
 		v.depth -= 1
 	}
-	
+
 	variable := Variable{
 		Name:        name,
 		Subscripts:  subscripts,
 		Arguments:   arguments,
 		Description: "description..",
 	}
-	
+
 	return variable
 }
 
@@ -126,7 +127,7 @@ func (v *FormulaVisitorImpl) VisitSubscriptTail(ctx *parser.SubscriptTailContext
 	if ctx.GeneralIntLit() != nil {
 		return strconv.Itoa(ctx.GeneralIntLit().Accept(v).(int))
 	}
-	
+
 	return nil
 }
 
@@ -134,7 +135,7 @@ func (v *FormulaVisitorImpl) VisitArgumentTail(ctx *parser.ArgumentTailContext) 
 	if ctx.SEMICOLON() == nil {
 		return ctx.ArgumentList(0).Accept(v).([]*Argument)
 	}
-	
+
 	str := ctx.ArgumentList(0).GetText()
 	println(str)
 	left := ctx.ArgumentList(0).Accept(v).([]*Argument)
@@ -148,12 +149,11 @@ func (v *FormulaVisitorImpl) VisitArgumentTail(ctx *parser.ArgumentTailContext) 
 	for _, argument := range right {
 		argument.IsCause = true
 	}
-	
+
 	arguments := left
 	arguments = append(arguments, right...)
 	return arguments
 }
-
 
 func (v *FormulaVisitorImpl) VisitGeneralId(ctx *parser.GeneralIdContext) interface{} {
 	if ctx.SINGLEID() != nil {
@@ -172,7 +172,7 @@ func (v *FormulaVisitorImpl) VisitConstant(ctx *parser.ConstantContext) interfac
 	if ctx.FLOATLIT() != nil {
 		return ctx.FLOATLIT().Accept(v).(float64)
 	}
-	
+
 	return nil
 }
 
@@ -183,7 +183,7 @@ func (v *FormulaVisitorImpl) VisitFraction(ctx *parser.FractionContext) interfac
 			&Operator{Value: DIV},
 			ctx.Expr(1).Accept(v),
 		},
-		IsArgument:  v.depth == 0,
+		IsArgument: v.depth == 0,
 	}
 }
 
@@ -222,7 +222,7 @@ func (v *FormulaVisitorImpl) VisitGeneralIntLit(ctx *parser.GeneralIntLitContext
 		}
 		return intLit
 	}
-	
+
 	return nil
 }
 
@@ -233,6 +233,6 @@ func (v *FormulaVisitorImpl) exprForBinaryOp(ctx *parser.ExprContext, operator b
 			operator,
 			ctx.Expr(1).Accept(v),
 		},
-		IsArgument:  v.depth == 0,
+		IsArgument: v.depth == 0,
 	}
 }

@@ -8,21 +8,21 @@ import (
 type ID int64
 
 type Equation struct {
-	Id    ID     `json:"id" form:"required"`
-	Value string `json:"value" form:"required"`
-	Category string `json:"category" form:"required"`
+	Id        ID          `json:"id" form:"required"`
+	Value     string      `json:"value" form:"required"`
+	Category  string      `json:"category" form:"required"`
 	Variables []*Variable `json:"variables"`
-	Cause string `json:"cause"`
-	Effect string `json:"effect"`
+	Cause     string      `json:"cause"`
+	Effect    string      `json:"effect"`
 }
 
 type EquationMemory struct {
 	equations map[ID]*Expression
-	repo Repository
+	repo      Repository
 }
 
-func NewEquationMemory(repo Repository) EquationMemory {
-	return EquationMemory{
+func NewEquationMemory(repo Repository) *EquationMemory {
+	return &EquationMemory{
 		make(map[ID]*Expression),
 		repo,
 	}
@@ -53,4 +53,12 @@ func (e *EquationMemory) List() ([]*Expression, error) {
 		expressions = append(expressions, v)
 	}
 	return expressions, nil
+}
+
+func (e *EquationMemory) Insert(expression *Expression) (*Expression, error) {
+	if expression == nil {
+		return nil, fmt.Errorf("expression is nil")
+	}
+	e.equations[expression.EquationId] = expression
+	return expression, nil
 }

@@ -1,0 +1,9 @@
+with-expecter: true
+dir: "{{.InterfaceDir}}/mocks"
+outpkg: "mocks"
+packages:
+  math-parser/internal/math/domain/formula:
+    config:
+    interfaces:
+      Repository:
+        config:
