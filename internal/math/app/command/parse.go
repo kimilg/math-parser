@@ -29,7 +29,7 @@ func NewParseHandler(repo formula.Repository, equationMemory *formula.EquationMe
 
 func (p parseHandler) Handle(ctx context.Context, cmd Parse) error {
 	eq, err := p.repo.GetFromValue(ctx, cmd.Equation.Value)
-	if eq == nil && err != nil {
+	if eq == nil && err == nil {
 		eq, err = p.repo.Insert(ctx, cmd.Equation)
 		if err != nil {
 			return fmt.Errorf("internal server error: %w", err)
