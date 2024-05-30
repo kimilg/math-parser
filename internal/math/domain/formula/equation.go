@@ -17,12 +17,14 @@ type Equation struct {
 }
 
 type EquationMemory struct {
-	equations map[ID]*Expression
-	repo      Repository
+	equations   map[ID]*Equation
+	expressions map[ID]*Expression
+	repo        Repository
 }
 
 func NewEquationMemory(repo Repository) *EquationMemory {
 	return &EquationMemory{
+		make(map[ID]*Equation),
 		make(map[ID]*Expression),
 		repo,
 	}
@@ -34,31 +36,65 @@ func (e *EquationMemory) Load(ctx context.Context) error {
 		return fmt.Errorf("error during loading equation repository: %v", err)
 	}
 	for _, equation := range equations {
+		e.equations[equation.Id] = equation
 		expression := ParseEquation(equation)
-		e.equations[expression.EquationId] = expression
+		e.expressions[expression.EquationId] = expression
 	}
 	return nil
 }
 
-func (e *EquationMemory) Get(id ID) (*Expression, error) {
+func (e *EquationMemory) GetEquation(id ID) (*Equation, error) {
 	if e.equations[id] == nil {
 		return nil, fmt.Errorf("no such id: %d", id)
 	}
 	return e.equations[id], nil
 }
 
-func (e *EquationMemory) List() ([]*Expression, error) {
-	var expressions []*Expression
+func (e *EquationMemory) GetExpression(id ID) (*Expression, error) {
+	if e.expressions[id] == nil {
+		return nil, fmt.Errorf("no such id: %d", id)
+	}
+	return e.expressions[id], nil
+}
+
+func (e *EquationMemory) ListEquations() ([]*Equation, error) {
+	var equations []*Equation
 	for _, v := range e.equations {
+		equations = append(equations, v)
+	}
+	return equations, nil
+}
+
+func (e *EquationMemory) ListExpressions() ([]*Expression, error) {
+	var expressions []*Expression
+	for _, v := range e.expressions {
 		expressions = append(expressions, v)
 	}
 	return expressions, nil
 }
 
-func (e *EquationMemory) Insert(expression *Expression) (*Expression, error) {
+func (e *EquationMemory) Insert(equation *Equation) (*Equation, error) {
+	if equation == nil {
+		return nil, fmt.Errorf("expression is nil")
+	}
+	e.equations[equation.Id] = equation
+	expression := ParseEquation(equation)
+	e.expressions[expression.EquationId] = expression
+	return equation, nil
+}
+
+func (e *EquationMemory) InsertEquation(equation *Equation) (*Equation, error) {
+	if equation == nil {
+		return nil, fmt.Errorf("expression is nil")
+	}
+	e.equations[equation.Id] = equation
+	return equation, nil
+}
+
+func (e *EquationMemory) InsertExpression(expression *Expression) (*Expression, error) {
 	if expression == nil {
 		return nil, fmt.Errorf("expression is nil")
 	}
-	e.equations[expression.EquationId] = expression
+	e.expressions[expression.EquationId] = expression
 	return expression, nil
 }

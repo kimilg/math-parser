@@ -2,6 +2,8 @@ package command
 
 import (
 	"context"
+	"fmt"
+	"math-parser/internal/math/domain/field"
 	"math-parser/internal/math/domain/formula"
 	"math-parser/internal/math/domain/formula/mocks"
 	"testing"
@@ -10,6 +12,15 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
+
+func TestWow(t *testing.T) {
+	vectors := []field.IVector{
+		field.Vector{1, 2, 3, "A", "b"},
+		field.Vector{2, 3, 4, "b", "b"},
+		field.Scalar{1, "c", "c"},
+	}
+	print(fmt.Sprintf("%v", vectors))
+}
 
 func TestParse(t *testing.T) {
 	//given
@@ -38,7 +49,7 @@ func TestParse(t *testing.T) {
 	parseHandler.Handle(ctx, Parse{Equation: &formula.Equation{}})
 
 	//then
-	resultExpression, err := equationMemory.Get(1)
+	resultExpression, err := equationMemory.GetExpression(1)
 	require.NoError(t, err)
 	assert.Equal(t, formula.ID(1), resultExpression.EquationId)
 	assert.Equal(t, "mock_category", resultExpression.Category)
@@ -68,7 +79,7 @@ func TestParseNewEquation(t *testing.T) {
 	parseHandler.Handle(ctx, Parse{Equation: &formula.Equation{}})
 
 	//then
-	resultExpression, err := equationMemory.Get(1)
+	resultExpression, err := equationMemory.GetExpression(1)
 	require.NoError(t, err)
 	assert.Equal(t, formula.ID(1), resultExpression.EquationId)
 	assert.Equal(t, "mock_category", resultExpression.Category)
