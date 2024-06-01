@@ -47,7 +47,8 @@ func (p parseHandler) Handle(ctx context.Context, cmd Parse) error {
 
 	equationExpression := formula.ParseEquation(eq)
 	print(equationExpression.Description)
-	p.equationMemory.Insert(cmd.Equation)
+	p.equationMemory.InsertEquation(cmd.Equation)
+	p.equationMemory.InsertExpression(equationExpression)
 
 	return nil
 }

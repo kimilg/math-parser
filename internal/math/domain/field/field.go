@@ -1,5 +1,7 @@
 package field
 
+import "math-parser/internal/math/domain/formula"
+
 const (
 	Max         Pos   = 500
 	PositionMax int64 = 125000000
@@ -64,4 +66,10 @@ func newVariableFull(name string, category string) *Variable {
 		Category:    category,
 		ValueMapper: make(map[string]IVector),
 	}
+}
+
+type VariableValue struct {
+	VariableDetail formula.Variable
+	Key            string
+	Value          IVector
 }
