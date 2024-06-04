@@ -20,13 +20,15 @@ type EquationMemory struct {
 	equations   map[ID]*Equation
 	expressions map[ID]*Expression
 	repo        Repository
+	parser      Parser
 }
 
-func NewEquationMemory(repo Repository) *EquationMemory {
+func NewEquationMemory(repo Repository, parser Parser) *EquationMemory {
 	return &EquationMemory{
 		make(map[ID]*Equation),
 		make(map[ID]*Expression),
 		repo,
+		parser,
 	}
 }
 
@@ -37,7 +39,7 @@ func (e *EquationMemory) Load(ctx context.Context) error {
 	}
 	for _, equation := range equations {
 		e.equations[equation.Id] = equation
-		expression := ParseEquation(equation)
+		expression := e.parser.Parse(equation).(*Expression)
 		e.expressions[expression.EquationId] = expression
 	}
 	return nil
@@ -78,7 +80,7 @@ func (e *EquationMemory) Insert(equation *Equation) (*Equation, error) {
 		return nil, fmt.Errorf("expression is nil")
 	}
 	e.equations[equation.Id] = equation
-	expression := ParseEquation(equation)
+	expression := e.parser.Parse(equation).(*Expression)
 	e.expressions[expression.EquationId] = expression
 	return equation, nil
 }

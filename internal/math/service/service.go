@@ -10,6 +10,7 @@ import (
 	"math-parser/internal/math/app"
 	"math-parser/internal/math/app/command"
 	"math-parser/internal/math/domain/formula"
+	"math-parser/internal/math/domain/parse"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -25,7 +26,8 @@ func NewApplication(ctx context.Context, c *config.Conf) (app.Application, func(
 
 	queries := db.New(conn)
 	repository := adapters.NewRepository(queries)
-	equationMemory := formula.NewEquationMemory(repository)
+	parser := parse.NewEquationParser()
+	equationMemory := formula.NewEquationMemory(repository, parser)
 	err = equationMemory.Load(ctx)
 	if err != nil {
 		log.Fatal(err)
@@ -33,7 +35,7 @@ func NewApplication(ctx context.Context, c *config.Conf) (app.Application, func(
 
 	return app.Application{
 			Commands: app.Commands{
-				Parse:             command.NewParseHandler(repository, equationMemory),
+				Parse:             command.NewParseHandler(repository, equationMemory, parser),
 				SpreadRandomField: command.NewSpreadRandomFieldHandler(repository, equationMemory),
 			},
 			Queries: app.Queries{},

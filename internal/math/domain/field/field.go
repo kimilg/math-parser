@@ -1,7 +1,5 @@
 package field
 
-import "math-parser/internal/math/domain/formula"
-
 const (
 	Max         Pos   = 500
 	PositionMax int64 = 125000000
@@ -43,33 +41,27 @@ var MaxPosition Position = Position{Max, Max, Max}
 
 type FieldMap map[string]IVector
 
-type Variable struct {
-	Name        string
-	Category    string
-	ValueMapper map[string]IVector
+type VariableValue struct {
+	Name     string
+	Category string
+	Mapper   map[string]IVector
 }
 
-func NewVariable(str ...string) *Variable {
+func NewVariableValue(str ...string) *VariableValue {
 	if len(str) == 0 {
-		return &Variable{
-			ValueMapper: make(map[string]IVector),
+		return &VariableValue{
+			Mapper: make(map[string]IVector),
 		}
 	} else if len(str) == 2 {
-		return newVariableFull(str[0], str[1])
+		return newVariableValueFull(str[0], str[1])
 	}
 	return nil
 }
 
-func newVariableFull(name string, category string) *Variable {
-	return &Variable{
-		Name:        name,
-		Category:    category,
-		ValueMapper: make(map[string]IVector),
+func newVariableValueFull(name string, category string) *VariableValue {
+	return &VariableValue{
+		Name:     name,
+		Category: category,
+		Mapper:   make(map[string]IVector),
 	}
-}
-
-type VariableValue struct {
-	VariableDetail formula.Variable
-	Key            string
-	Value          IVector
 }

@@ -1,8 +1,9 @@
-package formula
+package visitor
 
 import (
-	"github.com/antlr4-go/antlr/v4"
 	"math-parser/parser"
+
+	"github.com/antlr4-go/antlr/v4"
 )
 
 type FormulaListenerImpl struct {

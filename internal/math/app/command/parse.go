@@ -14,9 +14,10 @@ type ParseHandler decorator.CommandHandler[Parse]
 type parseHandler struct {
 	repo           formula.Repository
 	equationMemory *formula.EquationMemory
+	parser         formula.Parser
 }
 
-func NewParseHandler(repo formula.Repository, equationMemory *formula.EquationMemory) decorator.CommandHandler[Parse] {
+func NewParseHandler(repo formula.Repository, equationMemory *formula.EquationMemory, parser formula.Parser) decorator.CommandHandler[Parse] {
 	if repo == nil {
 		panic("nil repo")
 	}
@@ -24,7 +25,11 @@ func NewParseHandler(repo formula.Repository, equationMemory *formula.EquationMe
 		panic("nil equationMemory")
 	}
 	return decorator.ApplyCommandDecorators[Parse](
-		parseHandler{repo: repo, equationMemory: equationMemory})
+		parseHandler{
+			repo: repo, 
+			equationMemory: equationMemory,
+			parser: parser,
+		})
 }
 
 func (p parseHandler) Handle(ctx context.Context, cmd Parse) error {
@@ -45,7 +50,7 @@ func (p parseHandler) Handle(ctx context.Context, cmd Parse) error {
 	}
 	fmt.Printf("equation Id: %d, Value: %s\n", eq.Id, eq.Value)
 
-	equationExpression := formula.ParseEquation(eq)
+	equationExpression := (p.parser.Parse(eq)).(*formula.Expression)
 	print(equationExpression.Description)
 	p.equationMemory.InsertEquation(cmd.Equation)
 	p.equationMemory.InsertExpression(equationExpression)
