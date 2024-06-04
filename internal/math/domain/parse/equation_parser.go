@@ -3,17 +3,19 @@ package parse
 import (
 	"fmt"
 	"math-parser/internal/math/domain/formula"
-	"math-parser/internal/math/domain/visitor"
 	"math-parser/parser"
 
 	"github.com/antlr4-go/antlr/v4"
 )
 
 type EquationParser struct {
+	visitor parser.FormulaVisitor
 }
 
-func NewEquationParser() *EquationParser {
-	return &EquationParser{}
+func NewEquationParser(visitor parser.FormulaVisitor) *EquationParser {
+	return &EquationParser{
+		visitor: visitor,
+	}
 }
 
 func (e *EquationParser) Parse(eq *formula.Equation) interface{} {
@@ -25,8 +27,7 @@ func (e *EquationParser) Parse(eq *formula.Equation) interface{} {
 	p := parser.NewFormulaParser(stream)
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 
-	formulaVisitor := visitor.FormulaVisitorImpl{Depth: 0}
-	eqn := formulaVisitor.Visit(p.Equation())
+	eqn := e.visitor.Visit(p.Equation())
 	if eqn == nil {
 		_ = fmt.Errorf("nil value")
 	}

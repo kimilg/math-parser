@@ -11,6 +11,7 @@ import (
 	"math-parser/internal/math/app/command"
 	"math-parser/internal/math/domain/formula"
 	"math-parser/internal/math/domain/parse"
+	"math-parser/internal/math/domain/visitor"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -26,7 +27,8 @@ func NewApplication(ctx context.Context, c *config.Conf) (app.Application, func(
 
 	queries := db.New(conn)
 	repository := adapters.NewRepository(queries)
-	parser := parse.NewEquationParser()
+	formulaVisitor := visitor.FormulaVisitorImpl{Depth: 0}
+	parser := parse.NewEquationParser(&formulaVisitor)
 	equationMemory := formula.NewEquationMemory(repository, parser)
 	err = equationMemory.Load(ctx)
 	if err != nil {

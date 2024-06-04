@@ -7,6 +7,7 @@ import (
 	"math-parser/internal/math/domain/formula"
 	"math-parser/internal/math/domain/formula/mocks"
 	"math-parser/internal/math/domain/parse"
+	"math-parser/internal/math/domain/visitor"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,7 +27,7 @@ func TestWow(t *testing.T) {
 func TestParse(t *testing.T) {
 	//given
 	mockRepository := mocks.NewMockRepository(t)
-	parser := parse.NewEquationParser()
+	parser := parse.NewEquationParser(&visitor.FormulaVisitorImpl{Depth: 0})
 
 	mockRepository.On("GetFromValue", mock.Anything, mock.Anything).
 		Return(&formula.Equation{
@@ -61,7 +62,7 @@ func TestParse(t *testing.T) {
 func TestParseNewEquation(t *testing.T) {
 	//given
 	mockRepository := mocks.NewMockRepository(t)
-	parser := parse.NewEquationParser()
+	parser := parse.NewEquationParser(&visitor.FormulaVisitorImpl{Depth: 0})
 
 	mockRepository.On("GetFromValue", mock.Anything, mock.Anything).
 		Return(nil, nil)
