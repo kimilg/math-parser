@@ -10,6 +10,11 @@ type Variable struct {
 	Description string    `json:"description,omitempty"`
 }
 
+type ArgumentKey struct {
+	Category    string
+	SubCategory string
+}
+
 type VariableStringArguments struct {
 	
 }

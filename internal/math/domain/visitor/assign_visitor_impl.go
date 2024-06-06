@@ -1,6 +1,8 @@
 package visitor
 
 import (
+	"math-parser/internal/math/domain/field"
+	"math-parser/internal/math/domain/formula"
 	"math-parser/parser"
 
 	"github.com/antlr4-go/antlr/v4"
@@ -8,6 +10,8 @@ import (
 
 type AssignVisitorImpl struct {
 	*parser.BaseFormulaVisitor
+	argumentMapper *map[formula.ArgumentKey]*field.IVector
+	variableValueMapper *map[string]*field.VariableValue
 }
 
 func (v *AssignVisitorImpl) Visit(tree antlr.ParseTree) interface{} {
@@ -19,6 +23,7 @@ func (v *AssignVisitorImpl) Visit(tree antlr.ParseTree) interface{} {
 }
 
 func (v *AssignVisitorImpl) VisitEquation(ctx *parser.EquationContext) interface{} {
+	ctx.Expr(0).Accept(v)
 	return v.VisitChildren(ctx)
 }
 

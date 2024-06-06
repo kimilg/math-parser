@@ -23,6 +23,11 @@ type EquationMemory struct {
 	parser      Parser
 }
 
+type Pair struct {
+	Equation *Equation
+	Expression *Expression
+}
+
 func NewEquationMemory(repo Repository, parser Parser) *EquationMemory {
 	return &EquationMemory{
 		make(map[ID]*Equation),
@@ -57,6 +62,14 @@ func (e *EquationMemory) GetExpression(id ID) (*Expression, error) {
 		return nil, fmt.Errorf("no such id: %d", id)
 	}
 	return e.expressions[id], nil
+}
+
+func (e *EquationMemory) List() ([]*Pair, error) {
+	var pairs []*Pair
+	for k, v := range e.equations {
+		pairs = append(pairs, &Pair{v, e.expressions[k]})
+	}
+	return pairs, nil
 }
 
 func (e *EquationMemory) ListEquations() ([]*Equation, error) {

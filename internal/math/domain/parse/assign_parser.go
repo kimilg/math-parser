@@ -9,20 +9,21 @@ import (
 	"github.com/antlr4-go/antlr/v4"
 )
 
-type EquationParser struct {
+type AssignParser struct {
 	visitor parser.FormulaVisitor
 	ParserMapper map[string]*parser.FormulaParser
 	mutex *sync.Mutex
 }
 
-func NewEquationParser(visitor parser.FormulaVisitor) *EquationParser {
-	return &EquationParser{
+func NewAssignParser(visitor parser.FormulaVisitor) *AssignParser {
+	return &AssignParser{
 		visitor: visitor,
-		mutex:   &sync.Mutex{},
+		ParserMapper: make(map[string]*parser.FormulaParser),
+		mutex: &sync.Mutex{},
 	}
 }
 
-func (e *EquationParser) Parse(eq *formula.Equation) interface{} {
+func (a *AssignParser) Parse(eq *formula.Equation) interface{} {
 	is := antlr.NewInputStream(eq.Value)
 
 	lexer := parser.NewFormulaLexer(is)
@@ -31,7 +32,7 @@ func (e *EquationParser) Parse(eq *formula.Equation) interface{} {
 	p := parser.NewFormulaParser(stream)
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 
-	eqn := e.visitor.Visit(p.Equation())
+	eqn := a.visitor.Visit(p.Equation())
 	if eqn == nil {
 		_ = fmt.Errorf("nil value")
 	}
@@ -41,12 +42,12 @@ func (e *EquationParser) Parse(eq *formula.Equation) interface{} {
 	return exprEquation
 }
 
-func (e *EquationParser) GetParser(eqStr string) *parser.FormulaParser {
-
-	if e.ParserMapper[eqStr] == nil {
-		e.mutex.Lock()
-		defer e.mutex.Unlock()
-		if e.ParserMapper[eqStr] == nil {
+func (a *AssignParser) GetParser(eqStr string) *parser.FormulaParser {
+	
+	if a.ParserMapper[eqStr] == nil {
+		a.mutex.Lock()
+		defer a.mutex.Unlock()
+		if a.ParserMapper[eqStr] == nil {
 			is := antlr.NewInputStream(eqStr)
 
 			lexer := parser.NewFormulaLexer(is)
@@ -55,9 +56,9 @@ func (e *EquationParser) GetParser(eqStr string) *parser.FormulaParser {
 			p := parser.NewFormulaParser(stream)
 			p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 
-			e.ParserMapper[eqStr] = p
+			a.ParserMapper[eqStr] = p
 		}
 	}
-
-	return e.ParserMapper[eqStr]
+	
+	return a.ParserMapper[eqStr]
 }

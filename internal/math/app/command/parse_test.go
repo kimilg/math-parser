@@ -2,8 +2,6 @@ package command
 
 import (
 	"context"
-	"fmt"
-	"math-parser/internal/math/domain/field"
 	"math-parser/internal/math/domain/formula"
 	"math-parser/internal/math/domain/formula/mocks"
 	"math-parser/internal/math/domain/parse"
@@ -15,14 +13,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestWow(t *testing.T) {
-	vectors := []field.IVector{
-		field.Vector{1, 2, 3, "A", "b"},
-		field.Vector{2, 3, 4, "b", "b"},
-		field.Scalar{1, "c", "c"},
-	}
-	print(fmt.Sprintf("%v", vectors))
-}
+//func TestWow(t *testing.T) {
+//	vectors := []field.IVector{
+//		field.Vector{1, 2, 3, "A", "b"},
+//		field.Vector{2, 3, 4, "b", "b"},
+//		field.Scalar{1, "c", "c"},
+//	}
+//	print(fmt.Sprintf("%v", vectors))
+//}
 
 func TestParse(t *testing.T) {
 	//given
