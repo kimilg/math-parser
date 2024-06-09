@@ -2,7 +2,7 @@ package formula
 
 type Constant struct {
 	Name        string  `json:"name"`
-	Value       float64 `json:"value"`
+	Value       float32 `json:"value"`
 	Description string  `json:"description"`
 }
 

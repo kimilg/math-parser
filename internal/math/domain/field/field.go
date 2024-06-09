@@ -4,6 +4,12 @@ const (
 	Max         Pos   = 500
 	PositionMax int64 = 125000000
 )
+var (
+	LoopSizeMap = map[string]int{
+		"position": 3,
+		"time": -1,
+	}
+)
 
 type IVector interface {
 	getSize() uint

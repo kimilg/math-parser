@@ -38,7 +38,7 @@ func NewApplication(ctx context.Context, c *config.Conf) (app.Application, func(
 	return app.Application{
 			Commands: app.Commands{
 				Parse:             command.NewParseHandler(repository, equationMemory, parser),
-				SpreadRandomField: command.NewSpreadRandomFieldHandler(repository, equationMemory, assignParser),
+				SpreadRandomField: command.NewSpreadRandomFieldHandler(repository, equationMemory, assignParser, &visitor.AssignVisitorImpl{}),
 			},
 			Queries: app.Queries{},
 		}, func() {

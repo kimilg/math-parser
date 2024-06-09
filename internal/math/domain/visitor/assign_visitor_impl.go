@@ -10,8 +10,8 @@ import (
 
 type AssignVisitorImpl struct {
 	*parser.BaseFormulaVisitor
-	argumentMapper *map[formula.ArgumentKey]*field.IVector
-	variableValueMapper *map[string]*field.VariableValue
+	ArgumentMapper map[formula.ArgumentConcrete]field.IVector
+	VariableValueMapper map[string]*field.VariableValue
 }
 
 func (v *AssignVisitorImpl) Visit(tree antlr.ParseTree) interface{} {

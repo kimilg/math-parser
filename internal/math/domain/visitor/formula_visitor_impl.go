@@ -48,7 +48,7 @@ func (v *FormulaVisitorImpl) VisitExpr(ctx *parser.ExprContext) interface{} {
 		return &formula.Expression{
 			Elements: []formula.Element{
 				&formula.Constant{
-					Value: ctx.Constant().Accept(v).(float64),
+					Value: ctx.Constant().Accept(v).(float32),
 				},
 			},
 			Description: "constant",
@@ -193,7 +193,7 @@ func (v *FormulaVisitorImpl) VisitBinaryOperator(ctx *parser.BinaryOperatorConte
 }
 
 func (v *FormulaVisitorImpl) VisitArgumentList(ctx *parser.ArgumentListContext) interface{} {
-	arguments := []*formula.Argument{{Expression: ctx.Expr().Accept(v).(*formula.Expression)}}
+	arguments := []*formula.Argument{{Expression: ctx.Expr().Accept(v).(*formula.Expression), Name: ctx.Expr().GetText()}}
 	if ctx.ArgumentListTail() != nil {
 		arguments = append(arguments, ctx.ArgumentListTail().Accept(v).([]*formula.Argument)...)
 	}
@@ -201,7 +201,7 @@ func (v *FormulaVisitorImpl) VisitArgumentList(ctx *parser.ArgumentListContext) 
 }
 
 func (v *FormulaVisitorImpl) VisitArgumentListTail(ctx *parser.ArgumentListTailContext) interface{} {
-	arguments := []*formula.Argument{{Expression: ctx.Expr().Accept(v).(*formula.Expression)}}
+	arguments := []*formula.Argument{{Expression: ctx.Expr().Accept(v).(*formula.Expression), Name: ctx.Expr().GetText()}}
 	if ctx.ArgumentListTail() != nil && ctx.ArgumentListTail().COMMA() != nil {
 		arguments = append(arguments, ctx.ArgumentListTail().Accept(v).([]*formula.Argument)...)
 	}
