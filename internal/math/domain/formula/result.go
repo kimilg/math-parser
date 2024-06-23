@@ -3,22 +3,53 @@ package formula
 import "math-parser/internal/math/domain/field"
 
 type Result struct {
-	Unknowns []Unknown
+	Unknowns []*Unknown
 	Constant float32
 }
 
-type Unknown struct {
-	Name string
-	Coefficient float32
-	Value field.IVector
-}
 
-func (r *Result) Plus(other *Result) *Result {
-	if r.Unknowns == nil && other.Unknowns == nil {
-		return &Result{Constant: r.Constant + other.Constant}
+func (r *Result) Plus(other *Result) (*Result, error) {
+	var unknown Unknown{"", 1, field.IVector.zeroVector} //static zero vector
+	
+	for _, left := range r.Unknowns {
+		for _, right := range other.Unknowns {
+			if left.Value != nil && right.Value != nil {
+				res, err := left.Plus(right)
+				if err != nil {
+					return nil, err
+				}
+				
+			}
+		}
 	}
 	
-	unknowns := make([]Unknown, len(r.Unknowns) + len(other.Unknowns))
+	
+	unknowns := make([]*Unknown, len(r.Unknowns) + len(other.Unknowns))
+	unknowns = append(unknowns, r.Unknowns...)
+	unknowns = append(unknowns, other.Unknowns...)
+	return &Result{Unknowns: unknowns, Constant: r.Constant + other.Constant}
+}
+
+func (r *Result) Minus(other *Result) *Result {
+	for _, unknown := range other.Unknowns {
+		unknown.Value.FlipSign()
+	}
+	unknowns := make([]*Unknown, len(r.Unknowns) + len(other.Unknowns))
+	unknowns = append(unknowns, r.Unknowns...)
+	unknowns = append(unknowns, other.Unknowns...)
+	return &Result{Unknowns: unknowns, Constant: r.Constant + other.Constant}
+}
+
+func (r *Result) Mult(other *Result) *Result { // 충돌을 인지할 수 있다.
+	var unknown Unknown	
+	for _, left := range r.Unknowns {
+		for _, right := range other.Unknowns {
+			left.multUnknown(right)
+		}
+	}
+	
+	
+	unknowns := make([]*Unknown, len(r.Unknowns) + len(other.Unknowns))
 	unknowns = append(unknowns, r.Unknowns...)
 	unknowns = append(unknowns, other.Unknowns...)
 	return &Result{Unknowns: unknowns, Constant: r.Constant + other.Constant}
@@ -32,7 +63,7 @@ func (r *Result) IsConstant() bool {
 	return r.getUnknownNums() == 0
 }
 
-func (r *Result) GetUnknown() Unknown {
+func (r *Result) GetUnknown() *Unknown {
 	return r.Unknowns[0]
 }
 

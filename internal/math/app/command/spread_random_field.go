@@ -78,6 +78,11 @@ func traverse(expression *formula.Expression, argumentMapper map[string]field.IV
 			case formula.PLUS:
 				return left.Plus(right)
 			case formula.MINUS:
+				return left.Minus(right)
+			case formula.MULT:
+				
+			default:
+				panic("unhandled default case")
 				
 			}
 		}
@@ -89,11 +94,11 @@ func traverse(expression *formula.Expression, argumentMapper map[string]field.IV
 			variableValue := variableValueMapper[e.Name]
 			key, err := buildKey(argumentMapper, e); 
 			if err != nil {
-				return &formula.Result{Unknowns: []formula.Unknown{{Name: e.Name, Coefficient: 1, Value: nil}}}
+				return &formula.Result{Unknowns: []*formula.Unknown{{Name: e.Name, Coefficient: 1, Value: nil}}}
 			}
 			
 			valueVector := variableValue.Mapper[key]
-			return &formula.Result{Unknowns: []formula.Unknown{{Name: e.Name, Coefficient: 1, Value: valueVector}}}
+			return &formula.Result{Unknowns: []*formula.Unknown{{Name: e.Name, Coefficient: 1, Value: valueVector}}}
 			
 		case formula.Constant:
 			return &formula.Result{Constant: e.Value}
@@ -103,8 +108,6 @@ func traverse(expression *formula.Expression, argumentMapper map[string]field.IV
 	}
 }
 
-
-
 func dynamicLoop(argumentConcretes []*formula.ArgumentConcrete, argumentMapper map[string]field.IVector, eqStr string, 
 	variableValueMapper map[string]*field.VariableValue, expression *formula.Expression) error {
 	
@@ -112,12 +115,12 @@ func dynamicLoop(argumentConcretes []*formula.ArgumentConcrete, argumentMapper m
 	if argumentConcrete == nil {
 		return assignValue(argumentMapper, eqStr, variableValueMapper, expression)
 	}
-	loopSize := field.LoopSizeMap[argumentConcrete.SubCategory]
-	if loopSize == 0 {
+	dim := field.Dimension[argumentConcrete.SubCategory]
+	if dim == 0 {
 		return fmt.Errorf("error while generating loop: there is no loop size definition for SubCategory" + 
 			argumentConcrete.SubCategory)
 	}
-	switch loopSize {
+	switch dim {
 	case 3:
 		return dynamicLoopThree(argumentConcretes, argumentConcrete, argumentMapper, eqStr, variableValueMapper, expression)
 	case -1:
@@ -136,7 +139,7 @@ func dynamicLoopThree(argumentConcretes []*formula.ArgumentConcrete, argumentCon
 		for j = 0; j < field.Max; j++ {
 			for k = 0; k < field.Max; k++ {
 				argumentMapper[argumentConcrete.Name] = &field.Vector{i, j, k, "", argumentConcrete.SubCategory}
-				err := dynamicLoop(argumentConcretes, argumentMapper, eqStr, variableValueMapper, expression)
+				err := dynamicLoop(copySlice(argumentConcretes), argumentMapper, eqStr, variableValueMapper, expression)
 				if err != nil {
 					return err
 				}
@@ -144,6 +147,10 @@ func dynamicLoopThree(argumentConcretes []*formula.ArgumentConcrete, argumentCon
 		}
 	}
 	return nil
+}
+
+func copySlice[T any](orig []T) []T {
+	return append([]T(nil), orig...)
 }
 
 func dynamicLoopNone(argumentConcretes []*formula.ArgumentConcrete, argumentConcrete *formula.ArgumentConcrete,

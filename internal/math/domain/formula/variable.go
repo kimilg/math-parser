@@ -21,17 +21,12 @@ type ArgumentConcrete struct {
 }
 
 func (v *Variable) GetArgumentConcretes() []*ArgumentConcrete {
-	var keys map[ArgumentConcrete]bool
+	var argumentConcretes map[ArgumentConcrete]bool
 	for _, argument := range v.Arguments {
-		keys[ArgumentConcrete{argument.Name, argument.SubCategory}] = true
+		argumentConcretes[ArgumentConcrete{argument.Name, argument.SubCategory}] = true
 	}
-	var keySlice []*ArgumentConcrete
-	for key, exist := range keys {
-		if (exist) {
-			keySlice = append(keySlice, &key)
-		}
-	}
-	return keySlice
+	
+	return slice(argumentConcretes)
 }
 
 func (v *Variable) GetArgumentNames() []string {

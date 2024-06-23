@@ -33,13 +33,18 @@ func (e *Expression) GetArgumentConcretes() []*ArgumentConcrete {
 		}
 	}
 	
-	var argumentConcreteSlice []*ArgumentConcrete
-	for key, exist := range argumentConcretes {
+	return slice(argumentConcretes)
+}
+
+func slice(mapper map[ArgumentConcrete]bool) []*ArgumentConcrete {
+	var slice []*ArgumentConcrete
+	
+	for key, exist := range mapper {
 		if exist {
-			argumentConcreteSlice = append(argumentConcreteSlice, &key)	
-		}
+			slice = append(slice, &key)
+		}	
 	}
-	return argumentConcreteSlice
+	return slice
 }
 
 func (e *Expression) GetArgumentNames() []string {

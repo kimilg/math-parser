@@ -1,6 +1,6 @@
 package field
 
-type Pos int
-type Val int
+type Pos float32
+type Val float32
 
 type Coord interface{}
