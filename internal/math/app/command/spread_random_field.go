@@ -48,11 +48,11 @@ func (s spreadRandomFieldHandler) Handle(ctx context.Context, cmd SpreadRandomFi
 		equation := pair.Equation
 		expression := pair.Expression
 		if equation.Category == "field_making_rule" && expression.Category == "field_making_rule" {
-			variableValueMapper := make(map[string]*field.VariableValue)
+			variables := make(map[string]*field.Variable)
 			for _, v := range equation.Variables {
-				variableValueMapper[v.Name] = field.NewVariableValue(v.Name, v.Vcategory)
+				variables[v.Name] = field.NewVariable(v.Name, v.Vcategory)
 			}
-			err := s.calculateByField(equation.Value, variableValueMapper, expression)
+			err := s.calculateByField(equation.Value, expression, variables)
 			if err != nil {
 				return err
 			}
@@ -61,14 +61,94 @@ func (s spreadRandomFieldHandler) Handle(ctx context.Context, cmd SpreadRandomFi
 	return nil
 }
 
+func (s spreadRandomFieldHandler) calculateByField(equation string, expression *formula.Expression, 
+	variables map[string]*field.Variable) error {
+
+	arguments := make(map[string]field.IVector)
+	err := dynamicLoop(equation, expression, variables, expression.GetArgumentKinds(), arguments)
+	if err != nil {
+		return fmt.Errorf("error while calculating field %s: %w", equation, err)
+	}
+
+
+	var i, j, k, xi, xj, xk field.Pos
+	var dir int
+	for i = 0; i < field.Max; i++ {
+		for j = 0; j < field.Max; j++ {
+			for k = 0; k < field.Max; k++ {
+				displacementPosition := field.Vector{i, j, k, "displacement", "position"}
+				arguments[formula.ArgumentKey{"displacement", "position"}] = &displacementPosition
+
+				for xi = 0; xi < field.Max; xi++ {
+					for xj = 0; xj < field.Max; xj++ {
+						for xk = 0; xk < field.Max; xk++ {
+							for dir = 0; dir < 3; dir++ {
+
+								arguments[formula.ArgumentKey{"force", "amount"}] = getForce()[dir]
+								forcePosition := field.Vector{xi, xj, xk, "force", "position"}
+								arguments[formula.ArgumentKey{"force", "position"}] = &forcePosition
+								arguments[formula.ArgumentKey{"displacement", "time"}] = &field.Scalar{1, "displacement", "time"}
+								arguments[formula.ArgumentKey{"force", "time"}] = &field.Scalar{0, "force", "time"}
+
+
+
+
+								assignParser := s.parser.GetParser(equation)
+								if assignVisitor, ok := s.visitor.(*visitor.AssignVisitorImpl); ok {
+									assignVisitor.ArgumentMapper = arguments
+									assignVisitor.VariableValueMapper = variables
+									assignVisitor.Visit(assignParser.Equation())
+								}
+
+								for _, element := range expression.Elements {
+									switch e := element.(type) {
+									case formula.Variable:
+										variableValue := variables[e.Name]
+										value := variableValue.Mapper[buildKey(arguments, e)]
+										print(value)
+									}
+								}
+								// argument 이름도 포함되어야 parsing 할 때 적용될 수 있을 듯. 
+
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func dynamicLoop(equation string, expression *formula.Expression, variables map[string]*field.Variable, 
+	argumentKinds []*formula.ArgumentKind, arguments map[string]field.IVector) error {
+
+	argumentKind := formula.PopArgumentKind(argumentKinds)
+	if argumentKind == nil {
+		return assignValue(arguments, equation, variables, expression)
+	}
+	dimension := field.Dimension[argumentKind.SubCategory]
+	if dimension == 0 {
+		return fmt.Errorf("error while generating loop: there is no loop size definition for SubCategory" +
+			argumentKind.SubCategory)
+	}
+	switch dimension {
+	case 3:
+		return dynamicLoopThree(equation, expression, variables, argumentKinds, argumentKind, arguments)
+	case -1:
+		return dynamicLoopNone(equation, expression, variables, argumentKinds, argumentKind, arguments)
+	default:
+		return fmt.Errorf("error while generating loop: there is no loop size other than 1 and 3")
+	}
+}
+
 func assignValue(argumentMapper map[string]field.IVector, eqStr string, 
-	variableValueMapper map[string]*field.VariableValue, expression *formula.Expression) error {
+	variableValueMapper map[string]*field.Variable, expression *formula.Expression) error {
 	
 	result := traverse(expression, argumentMapper, variableValueMapper)
 }
 
 func traverse(expression *formula.Expression, argumentMapper map[string]field.IVector, 
-	variableValueMapper map[string]*field.VariableValue) *formula.Result {
+	variableValueMapper map[string]*field.Variable) *formula.Result {
 	
 	if len(expression.Elements) == 3 {
 		if operator, ok := expression.Elements[1].(byte); ok {
@@ -108,38 +188,15 @@ func traverse(expression *formula.Expression, argumentMapper map[string]field.IV
 	}
 }
 
-func dynamicLoop(argumentConcretes []*formula.ArgumentConcrete, argumentMapper map[string]field.IVector, eqStr string, 
-	variableValueMapper map[string]*field.VariableValue, expression *formula.Expression) error {
-	
-	argumentConcrete := formula.PopArgumentConcrete(argumentConcretes)
-	if argumentConcrete == nil {
-		return assignValue(argumentMapper, eqStr, variableValueMapper, expression)
-	}
-	dim := field.Dimension[argumentConcrete.SubCategory]
-	if dim == 0 {
-		return fmt.Errorf("error while generating loop: there is no loop size definition for SubCategory" + 
-			argumentConcrete.SubCategory)
-	}
-	switch dim {
-	case 3:
-		return dynamicLoopThree(argumentConcretes, argumentConcrete, argumentMapper, eqStr, variableValueMapper, expression)
-	case -1:
-		return dynamicLoopNone(argumentConcretes, argumentConcrete, argumentMapper, eqStr, variableValueMapper, expression)
-	default:
-		return fmt.Errorf("error while generating loop: there is no loop size other than 1 and 3")
-	}
-}
-
-func dynamicLoopThree(argumentConcretes []*formula.ArgumentConcrete, argumentConcrete *formula.ArgumentConcrete, 
-	argumentMapper map[string]field.IVector, eqStr string, 
-	variableValueMapper map[string]*field.VariableValue, expression *formula.Expression) error {
+func dynamicLoopThree(equation string, expression *formula.Expression, variables map[string]*field.Variable,
+	argumentKinds []*formula.ArgumentKind, argumentKind *formula.ArgumentKind, arguments map[string]field.IVector) error {
 	
 	var i, j, k field.Pos
 	for i = 0; i < field.Max; i++ {
 		for j = 0; j < field.Max; j++ {
 			for k = 0; k < field.Max; k++ {
-				argumentMapper[argumentConcrete.Name] = &field.Vector{i, j, k, "", argumentConcrete.SubCategory}
-				err := dynamicLoop(copySlice(argumentConcretes), argumentMapper, eqStr, variableValueMapper, expression)
+				arguments[argumentKind.Name] = &field.Vector{i, j, k, "", argumentKind.SubCategory}
+				err := dynamicLoop(equation, expression, variables, copySlice(argumentKinds), arguments)
 				if err != nil {
 					return err
 				}
@@ -153,75 +210,15 @@ func copySlice[T any](orig []T) []T {
 	return append([]T(nil), orig...)
 }
 
-func dynamicLoopNone(argumentConcretes []*formula.ArgumentConcrete, argumentConcrete *formula.ArgumentConcrete,
-	argumentMapper map[string]field.IVector, eqStr string,
-	variableValueMapper map[string]*field.VariableValue, expression *formula.Expression) error {
+func dynamicLoopNone(equation string, expression *formula.Expression, variables map[string]*field.Variable, 
+	argumentKinds []*formula.ArgumentKind, argumentKind *formula.ArgumentKind, arguments map[string]field.IVector) error {
 	
-	val, err := strconv.Atoi(argumentConcrete.Name)
+	val, err := strconv.Atoi(argumentKind.Name)
 	if err != nil {
-		return fmt.Errorf("error while converting %s to int: %w", argumentConcrete.Name, err)
+		return fmt.Errorf("error while converting %s to int: %w", argumentKind.Name, err)
 	}
-	argumentMapper[argumentConcrete.Name] = &field.Scalar{X: field.Val(val), SubCategory: argumentConcrete.SubCategory}
-	return dynamicLoop(argumentConcretes, argumentMapper, eqStr, variableValueMapper, expression)
-}
-
-
-func (s spreadRandomFieldHandler) calculateByField(eqStr string, variableValueMapper map[string]*field.VariableValue, 
-	expression *formula.Expression) error {
-
-	argumentMapper := make(map[string]field.IVector)
-	err := dynamicLoop(expression.GetArgumentConcretes(), argumentMapper, eqStr, variableValueMapper, expression)
-	if err != nil {
-		return fmt.Errorf("error while calculating field %s: %w", eqStr, err)
-	}
-	
-	
-	var i, j, k, xi, xj, xk field.Pos
-	var dir int
-	for i = 0; i < field.Max; i++ {
-		for j = 0; j < field.Max; j++ {
-			for k = 0; k < field.Max; k++ {
-				displacementPosition := field.Vector{i, j, k, "displacement", "position"}
-				argumentMapper[formula.ArgumentKey{"displacement", "position"}] = &displacementPosition
-
-				for xi = 0; xi < field.Max; xi++ {
-					for xj = 0; xj < field.Max; xj++ {
-						for xk = 0; xk < field.Max; xk++ {
-							for dir = 0; dir < 3; dir++ {
-
-								argumentMapper[formula.ArgumentKey{"force", "amount"}] = getForce()[dir]
-								forcePosition := field.Vector{xi, xj, xk, "force", "position"}
-								argumentMapper[formula.ArgumentKey{"force", "position"}] = &forcePosition
-								argumentMapper[formula.ArgumentKey{"displacement", "time"}] = &field.Scalar{1, "displacement", "time"}
-								argumentMapper[formula.ArgumentKey{"force", "time"}] = &field.Scalar{0, "force", "time"}
-
-								
-								
-								
-								assignParser := s.parser.GetParser(eqStr)
-								if assignVisitor, ok := s.visitor.(*visitor.AssignVisitorImpl); ok {
-									assignVisitor.ArgumentMapper = argumentMapper
-									assignVisitor.VariableValueMapper = variableValueMapper
-									assignVisitor.Visit(assignParser.Equation())
-								}
-
-								for _, element := range expression.Elements {
-									switch e := element.(type) {
-									case formula.Variable:
-										variableValue := variableValueMapper[e.Name]
-										value := variableValue.Mapper[buildKey(argumentMapper, e)]
-										print(value)
-									}
-								}
-								// argument 이름도 포함되어야 parsing 할 때 적용될 수 있을 듯. 
-							
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+	arguments[argumentKind.Name] = &field.Scalar{X: field.Val(val), SubCategory: argumentKind.SubCategory}
+	return dynamicLoop(equation, expression, variables, argumentKinds, arguments)
 }
 
 func buildKey(argumentMapper map[string]field.IVector, variable formula.Variable) (string, error) {

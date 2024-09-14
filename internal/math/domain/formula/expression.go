@@ -18,26 +18,26 @@ type Argument struct {
 	Name        string  `json:"name,omitempty"`
 }
 
-func (e *Expression) GetArgumentConcretes() []*ArgumentConcrete {
-	argumentConcretes := make(map[ArgumentConcrete]bool)
+func (e *Expression) GetArgumentKinds() []*ArgumentKind {
+	argumentKinds := make(map[ArgumentKind]bool)
 	for _, element := range e.Elements {
-		switch e := element.(type) {
+		switch el := element.(type) {
 		case *Variable:
-			for _, key := range e.GetArgumentConcretes() {
-				argumentConcretes[*key] = true
+			for _, key := range el.GetArgumentKinds() {
+				argumentKinds[*key] = true
 			}
 		case *Expression:
-			for _, key := range e.GetArgumentConcretes() {
-				argumentConcretes[*key] = true
+			for _, key := range el.GetArgumentKinds() {
+				argumentKinds[*key] = true
 			}
 		}
 	}
 	
-	return slice(argumentConcretes)
+	return slice(argumentKinds)
 }
 
-func slice(mapper map[ArgumentConcrete]bool) []*ArgumentConcrete {
-	var slice []*ArgumentConcrete
+func slice(mapper map[ArgumentKind]bool) []*ArgumentKind {
+	var slice []*ArgumentKind
 	
 	for key, exist := range mapper {
 		if exist {

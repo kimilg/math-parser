@@ -15,18 +15,18 @@ type ArgumentKey struct {
 	SubCategory string
 }
 
-type ArgumentConcrete struct {
+type ArgumentKind struct {
 	Name		string
 	SubCategory string
 }
 
-func (v *Variable) GetArgumentConcretes() []*ArgumentConcrete {
-	var argumentConcretes map[ArgumentConcrete]bool
+func (v *Variable) GetArgumentKinds() []*ArgumentKind {
+	var argumentKinds map[ArgumentKind]bool
 	for _, argument := range v.Arguments {
-		argumentConcretes[ArgumentConcrete{argument.Name, argument.SubCategory}] = true
+		argumentKinds[ArgumentKind{argument.Name, argument.SubCategory}] = true
 	}
 	
-	return slice(argumentConcretes)
+	return slice(argumentKinds)
 }
 
 func (v *Variable) GetArgumentNames() []string {
@@ -44,7 +44,7 @@ func (v *Variable) GetArgumentNames() []string {
 	return nameSlice
 }
 
-func PopArgumentConcrete(args []*ArgumentConcrete) *ArgumentConcrete {
+func PopArgumentKind(args []*ArgumentKind) *ArgumentKind {
 	if len(args) < 1 {
 		return nil
 	}

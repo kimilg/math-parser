@@ -31,11 +31,11 @@ func (e *EquationParser) Parse(eq *formula.Equation) interface{} {
 	p := parser.NewFormulaParser(stream)
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 
-	eqn := e.visitor.Visit(p.Equation())
-	if eqn == nil {
+	expr := e.visitor.Visit(p.Equation())
+	if expr == nil {
 		_ = fmt.Errorf("nil value")
 	}
-	exprEquation := eqn.(*formula.Expression)
+	exprEquation := expr.(*formula.Expression)
 	exprEquation.EquationId = eq.Id
 	exprEquation.Category = eq.Category
 	return exprEquation
