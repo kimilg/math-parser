@@ -3,10 +3,11 @@ package field
 type Variable struct {
 	Name     string
 	Category string
+	Value    IVector
 	Mapper   map[string]IVector
 }
 
-func (v *Variable)getValue(param string) IVector {
+func (v *Variable) getValue(param string) IVector {
 	if val, ok := v.Mapper[param]; ok {
 		return val
 	}

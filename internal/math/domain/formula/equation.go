@@ -16,21 +16,32 @@ type Equation struct {
 	Effect    string      `json:"effect"`
 }
 
+func (e *Equation) getVariable(name string, category string) *Variable {
+	for _, variable := range e.Variables {
+		if name == variable.Name && category == variable.Vcategory {
+			return variable
+		}
+	}
+	return nil
+}
+
 type EquationMemory struct {
-	equations   map[ID]*Equation
-	expressions map[ID]*Expression
-	repo        Repository
-	parser      Parser
+	equations         map[ID]*Equation
+	equationFromValue map[string]*Equation
+	expressions       map[ID]*Expression
+	repo              Repository
+	parser            Parser
 }
 
 type Pair struct {
-	Equation *Equation
+	Equation   *Equation
 	Expression *Expression
 }
 
 func NewEquationMemory(repo Repository, parser Parser) *EquationMemory {
 	return &EquationMemory{
 		make(map[ID]*Equation),
+		make(map[string]*Equation),
 		make(map[ID]*Expression),
 		repo,
 		parser,
@@ -44,6 +55,7 @@ func (e *EquationMemory) Load(ctx context.Context) error {
 	}
 	for _, equation := range equations {
 		e.equations[equation.Id] = equation
+		e.equationFromValue[equation.Value] = equation
 		expression := e.parser.Parse(equation).(*Expression)
 		e.expressions[expression.EquationId] = expression
 	}
@@ -55,6 +67,13 @@ func (e *EquationMemory) GetEquation(id ID) (*Equation, error) {
 		return nil, fmt.Errorf("no such id: %d", id)
 	}
 	return e.equations[id], nil
+}
+
+func (e *EquationMemory) GetEquationFromValue(value string) (*Equation, error) {
+	if e.equationFromValue[value] == nil {
+		return nil, fmt.Errorf("no such value: %s", value)
+	}
+	return e.equationFromValue[value], nil
 }
 
 func (e *EquationMemory) GetExpression(id ID) (*Expression, error) {
@@ -88,11 +107,12 @@ func (e *EquationMemory) ListExpressions() ([]*Expression, error) {
 	return expressions, nil
 }
 
-func (e *EquationMemory) Insert(equation *Equation) (*Equation, error) {
+func (e *EquationMemory) Upsert(equation *Equation) (*Equation, error) {
 	if equation == nil {
 		return nil, fmt.Errorf("expression is nil")
 	}
 	e.equations[equation.Id] = equation
+	e.equationFromValue[equation.Value] = equation
 	expression := e.parser.Parse(equation).(*Expression)
 	e.expressions[expression.EquationId] = expression
 	return equation, nil
@@ -103,6 +123,7 @@ func (e *EquationMemory) InsertEquation(equation *Equation) (*Equation, error) {
 		return nil, fmt.Errorf("expression is nil")
 	}
 	e.equations[equation.Id] = equation
+	e.equationFromValue[equation.Value] = equation
 	return equation, nil
 }
 
@@ -112,4 +133,16 @@ func (e *EquationMemory) InsertExpression(expression *Expression) (*Expression, 
 	}
 	e.expressions[expression.EquationId] = expression
 	return expression, nil
+}
+
+func (e *EquationMemory) InsertVariableValue(id ID, variableValue *VariableValue) error {
+	equation := e.equations[id]
+	if equation == nil {
+		return fmt.Errorf("no such id: %d", id)
+	}
+	for _, variable := range variableValue.Variables {
+		equationVariable := equation.getVariable(variable.Name, variable.Category)
+		equationVariable.Value = variable.Value
+	}
+	return nil
 }

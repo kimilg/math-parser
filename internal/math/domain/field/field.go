@@ -2,34 +2,40 @@ package field
 
 import (
 	"errors"
+	"math"
 )
 
 const (
 	Max         Pos   = 500
 	PositionMax int64 = 125000000
 )
+
 var (
 	Dimension = map[string]int{
 		"position": 3,
-		"time": -1,
+		"time":     -1,
 	}
 )
 
 type IVector interface {
 	//ZeroVector() IVector
 	//UnitVector() IVector
-	
-	GetSize() uint
+
+	GetDimensions() uint
+	GetSize() float64
 	FlipSign()
 	Plus(IVector) (IVector, error)
-	Mult(float32) IVector
+	Mult(float64) IVector
 }
 
 type Position struct {
 	X, Y, Z Pos
 }
 
-func (p *Position) GetSize() uint {
+func (p *Position) GetSize() float64 {
+	return math.Sqrt(float64(p.X*p.X + p.Y*p.Y + p.Z*p.Z))
+}
+func (p *Position) GetDimensions() uint {
 	return 3
 }
 func (p *Position) FlipSign() {
@@ -46,7 +52,7 @@ func (p *Position) Plus(other IVector) (IVector, error) {
 	}
 	return nil, errors.New("not a position")
 }
-func (p *Position) Mult(v float32) IVector {
+func (p *Position) Mult(v float64) IVector {
 	p.X *= Pos(v)
 	p.Y *= Pos(v)
 	p.Z *= Pos(v)
@@ -59,7 +65,10 @@ type Vector struct {
 	SubCategory string
 }
 
-func (v *Vector) GetSize() uint {
+func (v *Vector) GetSize() float64 {
+	return math.Sqrt(float64(v.X*v.X + v.Y*v.Y + v.Z*v.Z))
+}
+func (v *Vector) GetDimensions() uint {
 	return 3
 }
 func (v *Vector) FlipSign() {
@@ -76,7 +85,7 @@ func (v *Vector) Plus(other IVector) (IVector, error) {
 	}
 	return nil, errors.New("not a vector")
 }
-func (v *Vector) Mult(val float32) IVector {
+func (v *Vector) Mult(val float64) IVector {
 	v.X *= Pos(val)
 	v.Y *= Pos(val)
 	v.Z *= Pos(val)
@@ -89,10 +98,13 @@ type Scalar struct {
 	SubCategory string
 }
 
-func NewScalar(val float32) *Scalar {
+func (s *Scalar) GetSize() float64 {
+	return float64(s.X)
+}
+func NewScalar(val float64) *Scalar {
 	return &Scalar{X: Val(val)}
 }
-func (s *Scalar) GetSize() uint {
+func (s *Scalar) GetDimensions() uint {
 	return 1
 }
 func (s *Scalar) FlipSign() {
@@ -105,7 +117,7 @@ func (s *Scalar) Plus(other IVector) (IVector, error) {
 	}
 	return nil, errors.New("not a vector")
 }
-func (s *Scalar) Mult(v float32) IVector {
+func (s *Scalar) Mult(v float64) IVector {
 	s.X *= Val(v)
 	return s
 }
@@ -113,4 +125,3 @@ func (s *Scalar) Mult(v float32) IVector {
 var MaxPosition Position = Position{Max, Max, Max}
 
 type FieldMap map[string]IVector
-

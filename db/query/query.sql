@@ -26,7 +26,7 @@ LIMIT 1;
 
 -- name: ListEquations :many
 SELECT e.*, 
-       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory, 'arguments', v.arguments)) 
+       json_agg(DISTINCT jsonb_build_object('id', v.id, 'name', v.name, 'vcategory', v.vcategory, 'arguments', v.arguments))
        FILTER (WHERE v.id IS NOT NULL) AS variables
 FROM equation e 
     LEFT OUTER JOIN equation_variable ev 

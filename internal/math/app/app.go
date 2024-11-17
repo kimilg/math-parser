@@ -4,14 +4,14 @@ import "math-parser/internal/math/app/command"
 
 type Application struct {
 	Commands Commands
-	Queries Queries
+	Queries  Queries
 }
 
 type Commands struct {
-	Parse command.ParseHandler
+	Parse             command.ParseHandler
 	SpreadRandomField command.SpreadRandomFieldHandler
+	SetVariable       command.SetVariableHandler
 }
 
 type Queries struct {
-	
 }

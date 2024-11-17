@@ -4,7 +4,7 @@ sql:
     queries: "db/query"
     schema: "migrations"
     database:
-      uri: "postgres://myapp_user:myapp_pass@localhost:5432/myapp_db"
+      uri: "postgres://postgres:dlfrn30@localhost:5432/math"
     gen:
       go:
         package: "db"

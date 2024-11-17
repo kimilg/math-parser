@@ -65,7 +65,7 @@ func TestParseNewEquation(t *testing.T) {
 	mockRepository.On("GetFromValue", mock.Anything, mock.Anything).
 		Return(nil, nil)
 
-	mockRepository.On("Insert", mock.Anything, mock.Anything).
+	mockRepository.On("Upsert", mock.Anything, mock.Anything).
 		Return(&formula.Equation{
 			Id:       1,
 			Value:    "2=1+1",

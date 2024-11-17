@@ -192,7 +192,7 @@ func (_m *MockRepository) Insert(ctx context.Context, equation *formula.Equation
 	ret := _m.Called(ctx, equation)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Insert")
+		panic("no return value specified for Upsert")
 	}
 
 	var r0 *formula.Equation
@@ -217,7 +217,7 @@ func (_m *MockRepository) Insert(ctx context.Context, equation *formula.Equation
 	return r0, r1
 }
 
-// MockRepository_Insert_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Insert'
+// MockRepository_Insert_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Upsert'
 type MockRepository_Insert_Call struct {
 	*mock.Call
 }
@@ -226,7 +226,7 @@ type MockRepository_Insert_Call struct {
 //   - ctx context.Context
 //   - equation *formula.Equation
 func (_e *MockRepository_Expecter) Insert(ctx interface{}, equation interface{}) *MockRepository_Insert_Call {
-	return &MockRepository_Insert_Call{Call: _e.mock.On("Insert", ctx, equation)}
+	return &MockRepository_Insert_Call{Call: _e.mock.On("Upsert", ctx, equation)}
 }
 
 func (_c *MockRepository_Insert_Call) Run(run func(ctx context.Context, equation *formula.Equation)) *MockRepository_Insert_Call {

@@ -29,14 +29,14 @@ func (r *Repository) Get(ctx context.Context, id formula.ID) (*formula.Equation,
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshalling variables: %w", err)
 	}
-	
+
 	return &formula.Equation{
-		Id:    formula.ID(eqn.ID),
-		Value: eqn.Value,
-		Category: eqn.Category,
+		Id:        formula.ID(eqn.ID),
+		Value:     eqn.Value,
+		Category:  eqn.Category,
 		Variables: variables,
-		Cause: pgtypeToString(eqn.Cause),
-		Effect: pgtypeToString(eqn.Effect),
+		Cause:     pgtypeToString(eqn.Cause),
+		Effect:    pgtypeToString(eqn.Effect),
 	}, nil
 }
 
@@ -50,14 +50,14 @@ func (r *Repository) GetFromValue(ctx context.Context, value string) (*formula.E
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshalling variables: %w", err)
 	}
-	
+
 	return &formula.Equation{
-		Id:    formula.ID(eqn.ID),
-		Value: eqn.Value,
-		Category: eqn.Category,
+		Id:        formula.ID(eqn.ID),
+		Value:     eqn.Value,
+		Category:  eqn.Category,
 		Variables: variables,
-		Cause: pgtypeToString(eqn.Cause),
-		Effect: pgtypeToString(eqn.Effect),
+		Cause:     pgtypeToString(eqn.Cause),
+		Effect:    pgtypeToString(eqn.Effect),
 	}, nil
 }
 
@@ -73,42 +73,42 @@ func (r *Repository) List(ctx context.Context) ([]*formula.Equation, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error unmarshalling variables: %w", err)
 		}
-		
+
 		equations = append(equations,
 			&formula.Equation{
-				Id:    formula.ID(eqn.ID),
-				Value: eqn.Value,
-				Category: eqn.Category,
+				Id:        formula.ID(eqn.ID),
+				Value:     eqn.Value,
+				Category:  eqn.Category,
 				Variables: variables,
-				Cause: pgtypeToString(eqn.Cause),
-				Effect: pgtypeToString(eqn.Effect),
+				Cause:     pgtypeToString(eqn.Cause),
+				Effect:    pgtypeToString(eqn.Effect),
 			})
 	}
 	return equations, nil
 }
 
 func (r *Repository) Insert(ctx context.Context, equation *formula.Equation) (*formula.Equation, error) {
-	eqn, err := r.queries.InsertEquation(ctx, 
+	eqn, err := r.queries.InsertEquation(ctx,
 		db.InsertEquationParams{
-			Value: equation.Value, 
-			Category: equation.Category, 
-			Cause: pgtype.Text{String: equation.Cause, Valid: true},
-			Effect: pgtype.Text{String: equation.Effect, Valid: true},
+			Value:    equation.Value,
+			Category: equation.Category,
+			Cause:    pgtype.Text{String: equation.Cause, Valid: true},
+			Effect:   pgtype.Text{String: equation.Effect, Valid: true},
 		})
 	if err != nil {
 		return nil, fmt.Errorf("error creating equation: %w", err)
 	}
-	
+
 	for _, variable := range equation.Variables {
 		data, err := json.Marshal(variable.Arguments)
 		if err != nil {
-			return nil, fmt.Errorf("error marshaling variable.Arguments: %w", err)
+			return nil, fmt.Errorf("error marshaling variable.ArgumentMapper: %w", err)
 		}
-		_, err = r.queries.InsertVariable(ctx, 
+		_, err = r.queries.InsertVariable(ctx,
 			db.InsertVariableParams{
-				Name: variable.Name,
-				Vcategory: variable.Vcategory,
-				Arguments: data,
+				Name:       variable.Name,
+				Vcategory:  variable.Vcategory,
+				Arguments:  data,
 				EquationID: eqn.ID,
 			})
 		if err != nil {
@@ -120,13 +120,13 @@ func (r *Repository) Insert(ctx context.Context, equation *formula.Equation) (*f
 }
 
 func (r *Repository) Update(ctx context.Context, equation *formula.Equation) (*formula.Equation, error) {
-	eqn, err := r.queries.UpdateEquation(ctx, 
+	eqn, err := r.queries.UpdateEquation(ctx,
 		db.UpdateEquationParams{
-		ID: int64(equation.Id),
-		Value: equation.Value,
-		Category: equation.Category,
-		Cause: pgtype.Text{String: equation.Cause, Valid: true},
-		Effect: pgtype.Text{String: equation.Effect, Valid: true},
+			ID:       int64(equation.Id),
+			Value:    equation.Value,
+			Category: equation.Category,
+			Cause:    pgtype.Text{String: equation.Cause, Valid: true},
+			Effect:   pgtype.Text{String: equation.Effect, Valid: true},
 		})
 	if err != nil {
 		return nil, fmt.Errorf("error updating equation: %w", err)
@@ -135,20 +135,20 @@ func (r *Repository) Update(ctx context.Context, equation *formula.Equation) (*f
 	for _, variable := range equation.Variables {
 		data, err := json.Marshal(variable.Arguments)
 		if err != nil {
-			return nil, fmt.Errorf("error marshaling variable.Arguments: %w", err)
+			return nil, fmt.Errorf("error marshaling variable.ArgumentMapper: %w", err)
 		}
 		_, err = r.queries.InsertVariable(ctx,
 			db.InsertVariableParams{
-				Name: variable.Name,
-				Vcategory: variable.Vcategory,
-				Arguments: data,
+				Name:       variable.Name,
+				Vcategory:  variable.Vcategory,
+				Arguments:  data,
 				EquationID: eqn.ID,
 			})
 		if err != nil {
 			return nil, fmt.Errorf("error inserting equation_variable: %w", err)
 		}
 	}
-	
+
 	return equation, nil
 }
 
@@ -166,4 +166,3 @@ func pgtypeToString(text pgtype.Text) string {
 	}
 	return ""
 }
-

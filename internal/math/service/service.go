@@ -27,7 +27,7 @@ func NewApplication(ctx context.Context, c *config.Conf) (app.Application, func(
 
 	queries := db.New(conn)
 	repository := adapters.NewRepository(queries)
-	
+
 	parser := parse.NewEquationParser(&visitor.FormulaVisitorImpl{Depth: 0})
 	assignParser := parse.NewAssignParser(&visitor.AssignVisitorImpl{})
 	equationMemory := formula.NewEquationMemory(repository, parser)
@@ -35,11 +35,12 @@ func NewApplication(ctx context.Context, c *config.Conf) (app.Application, func(
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	return app.Application{
 			Commands: app.Commands{
 				Parse:             command.NewParseHandler(repository, equationMemory, parser),
 				SpreadRandomField: command.NewSpreadRandomFieldHandler(repository, equationMemory, assignParser, &visitor.AssignVisitorImpl{}),
+				SetVariable:       command.NewSetVariable(equationMemory),
 			},
 			Queries: app.Queries{},
 		}, func() {

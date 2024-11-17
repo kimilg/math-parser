@@ -26,9 +26,9 @@ func NewParseHandler(repo formula.Repository, equationMemory *formula.EquationMe
 	}
 	return decorator.ApplyCommandDecorators[Parse](
 		parseHandler{
-			repo: repo, 
+			repo:           repo,
 			equationMemory: equationMemory,
-			parser: parser,
+			parser:         parser,
 		})
 }
 

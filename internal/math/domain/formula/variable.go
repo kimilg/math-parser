@@ -1,13 +1,16 @@
 package formula
 
+import "math-parser/internal/math/domain/field"
+
 type Variable struct {
-	Id ID 				  `json:"id,omitempty"`
-	ClassificationID uint `json:"classificationId,omitempty"`
-	Name       string     `json:"name,omitempty"`
-	Vcategory  string     `json:"vcategory,omitempty"`
-	Subscripts []rune 	  `json:"subscripts,omitempty"`
-	Arguments []*Argument `json:"arguments,omitempty"`
-	Description string    `json:"description,omitempty"`
+	Id               ID          `json:"id,omitempty"`
+	ClassificationID uint        `json:"classificationId,omitempty"`
+	Name             string      `json:"name,omitempty"`
+	Vcategory        string      `json:"vcategory,omitempty"`
+	Subscripts       []rune      `json:"subscripts,omitempty"`
+	Arguments        []*Argument `json:"arguments,omitempty"`
+	Description      string      `json:"description,omitempty"`
+	Value            field.IVector
 }
 
 type ArgumentKey struct {
@@ -16,7 +19,7 @@ type ArgumentKey struct {
 }
 
 type ArgumentKind struct {
-	Name		string
+	Name        string
 	SubCategory string
 }
 
@@ -25,7 +28,7 @@ func (v *Variable) GetArgumentKinds() []*ArgumentKind {
 	for _, argument := range v.Arguments {
 		argumentKinds[ArgumentKind{argument.Name, argument.SubCategory}] = true
 	}
-	
+
 	return slice(argumentKinds)
 }
 
@@ -34,7 +37,7 @@ func (v *Variable) GetArgumentNames() []string {
 	for _, argument := range v.Arguments {
 		names[argument.Name] = true
 	}
-	
+
 	var nameSlice []string
 	for name, exist := range names {
 		if exist {

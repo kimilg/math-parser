@@ -23,12 +23,12 @@ func (e *Expression) GetArgumentKinds() []*ArgumentKind {
 	for _, element := range e.Elements {
 		switch el := element.(type) {
 		case *Variable:
-			for _, key := range el.GetArgumentKinds() {
-				argumentKinds[*key] = true
+			for _, kind := range el.GetArgumentKinds() {
+				argumentKinds[*kind] = true
 			}
 		case *Expression:
-			for _, key := range el.GetArgumentKinds() {
-				argumentKinds[*key] = true
+			for _, kind := range el.GetArgumentKinds() {
+				argumentKinds[*kind] = true
 			}
 		}
 	}
