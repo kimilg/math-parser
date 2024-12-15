@@ -1,17 +1,17 @@
 package formula
 
 type Classification struct {
-	Category string               `json:"category"`
-	Type     string               `json:"type"`
-	IsCause  bool                 `json:"isCause"`
-	IsEffect bool             `json:"isEffect"`
-	Expressions []*Expression `json:"expressions"`
-	Variables []*Variable     `json:"variables"`
+	Category    string
+	Type        string
+	IsCause     bool
+	IsEffect    bool
+	Expressions []*Expression
+	Variables   []*Variable
 }
 
 type Classifications []*Classification
 
 type ClassificationForm struct {
-	Category string `json:"category" form:"required"`
-	Object   string `json:"object" form:"required"`
+	Category string
+	Object   string
 }

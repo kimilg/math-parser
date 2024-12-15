@@ -1,34 +1,49 @@
 package field
 
+type VariableMapper struct {
+	Mapper map[string]*Variable
+}
+
+func NewVariableMapper() *VariableMapper {
+	var variableMapper VariableMapper
+	variableMapper.Mapper = make(map[string]*Variable)
+	return &variableMapper
+}
+
+func (v *VariableMapper) Put(name string, category string, constant IVector) {
+	v.Mapper[name] = NewVariable(name, category, constant)
+}
+
 type Variable struct {
 	Name     string
 	Category string
-	Value    IVector
-	Mapper   map[string]IVector
+	Constant IVector
+	Value    map[string]IVector
 }
 
 func (v *Variable) getValue(param string) IVector {
-	if val, ok := v.Mapper[param]; ok {
+	if val, ok := v.Value[param]; ok {
 		return val
 	}
 	return nil
 }
 
-func NewVariable(str ...string) *Variable {
-	if len(str) == 0 {
+func NewVariable(param ...any) *Variable {
+	if len(param) == 0 {
 		return &Variable{
-			Mapper: make(map[string]IVector),
+			Value: make(map[string]IVector),
 		}
-	} else if len(str) == 2 {
-		return newVariableFull(str[0], str[1])
+	} else if len(param) == 3 {
+		return newVariableFull(param[0].(string), param[1].(string), param[2].(IVector))
 	}
 	return nil
 }
 
-func newVariableFull(name string, category string) *Variable {
+func newVariableFull(name string, category string, constant IVector) *Variable {
 	return &Variable{
 		Name:     name,
 		Category: category,
-		Mapper:   make(map[string]IVector),
+		Constant: constant,
+		Value:    make(map[string]IVector),
 	}
 }

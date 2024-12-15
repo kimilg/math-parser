@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math-parser/internal/common/decorator"
 	"math-parser/internal/math/domain/formula"
+	"math-parser/internal/math/domain/formula/memory"
 )
 
 type Parse struct {
@@ -13,7 +14,7 @@ type Parse struct {
 type ParseHandler decorator.CommandHandler[Parse]
 type parseHandler struct {
 	repo           formula.Repository
-	equationMemory *formula.EquationMemory
+	equationMemory *memory.EquationMemory
 	parser         formula.Parser
 }
 
@@ -48,12 +49,12 @@ func (p parseHandler) Handle(ctx context.Context, cmd Parse) error {
 			}
 		}
 	}
-	fmt.Printf("equation Id: %d, Value: %s\n", eq.Id, eq.Value)
+	fmt.Printf("equation Id: %d, Constant: %s\n", eq.Id, eq.Value)
 
-	equationExpression := (p.parser.Parse(eq)).(*formula.Expression)
-	print(equationExpression.Description)
+	expression := (p.parser.Parse(eq)).(*formula.Expression)
+	print(expression.Description)
 	p.equationMemory.InsertEquation(cmd.Equation)
-	p.equationMemory.InsertExpression(equationExpression)
+	p.equationMemory.InsertExpression(expression)
 
 	return nil
 }

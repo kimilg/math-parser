@@ -1,21 +1,30 @@
 package formula
 
 type Expression struct {
-	EquationId ID	      `json:"equationId,omitempty"`
-	ClassificationID uint `json:"classificationId,omitempty"`
-	Category string	      `json:"category,omitempty"`
-	Elements []Element    `json:"elements,omitempty"`
-	IsCause  bool         `json:"isCause,omitempty"`
-	IsEffect bool         `json:"isEffect,omitempty"`
-	Description string    `json:"description,omitempty"`
-	IsArgument  bool      `json:"isArgument,omitempty"`
+	EquationId       ID
+	ClassificationID uint
+	Category         string
+	Elements         []Element
+	IsCause          bool
+	IsEffect         bool
+	Description      string
+	IsArgument       bool
+}
+
+func (e *Expression) SetVariableConstant(constant *Constant) {
+	for _, element := range e.Elements {
+		switch el := element.(type) {
+		case *Variable:
+			el.Constant
+		}
+	}
 }
 
 type Argument struct {
-	*Expression			`json:"expression,omitempty"`
-	Seq 		uint	`json:"seq,omitempty"`
-	SubCategory string  `json:"subCategory,omitempty"`
-	Name        string  `json:"name,omitempty"`
+	*Expression
+	Seq         uint
+	SubCategory string
+	Name        string
 }
 
 func (e *Expression) GetArgumentKinds() []*ArgumentKind {
@@ -32,17 +41,17 @@ func (e *Expression) GetArgumentKinds() []*ArgumentKind {
 			}
 		}
 	}
-	
+
 	return slice(argumentKinds)
 }
 
 func slice(mapper map[ArgumentKind]bool) []*ArgumentKind {
 	var slice []*ArgumentKind
-	
+
 	for key, exist := range mapper {
 		if exist {
 			slice = append(slice, &key)
-		}	
+		}
 	}
 	return slice
 }

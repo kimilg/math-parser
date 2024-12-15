@@ -6,9 +6,9 @@ import (
 )
 
 type MathInfo struct {
-	Equation      string
+	Equation       string
 	Expression     *formula.Expression
-	VariableMapper map[string]*field.Variable
+	VariableMapper *field.VariableMapper
 	ArgumentKinds  []*formula.ArgumentKind
 	ArgumentMapper map[string]field.IVector
 }

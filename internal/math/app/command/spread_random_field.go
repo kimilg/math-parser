@@ -50,12 +50,12 @@ func (s spreadRandomFieldHandler) Handle(ctx context.Context, cmd SpreadRandomFi
 		expression := pair.Expression
 		if equation.Category == "field_making_rule" && expression.Category == "field_making_rule" {
 			//여기서 variable mapper를 또 다른 controller를 통해 가져와야 할 듯. 이미 메모리에 담고 있어야 할듯. 하다.
-			// variableMapper가 필요없을 수 있다. 이제 equation 안의 variable에 값이 들어가 있으니. 그냥 그걸 쓰면 되겠다.
-			variableMapper := make(map[string]*field.Variable)
+			// variableMapper가 필요없을 수 있다. 이제 equation 안의 variable에 값이 들어가 있으니. 그냥 그걸 쓰면 되겠다.?
+			variableMapper := field.NewVariableMapper()
 			for _, v := range equation.Variables {
-				variableMapper[v.Name] = field.NewVariable(v.Name, v.Vcategory)
+				variableMapper.Put(v.Name, v.Vcategory, v.Constant)
 			}
-			err := s.calculateByField(equation.Value, expression, variableMapper)
+			err := s.calculateByField(equation.Value, *expression, variableMapper)
 			if err != nil {
 				return err
 			}
@@ -64,11 +64,23 @@ func (s spreadRandomFieldHandler) Handle(ctx context.Context, cmd SpreadRandomFi
 	return nil
 }
 
-func (s spreadRandomFieldHandler) calculateByField(equation string, expression *formula.Expression,
-	variables map[string]*field.Variable) error {
+// expression을 돌면서 variable을 찾아서 대입한다.
+func (s spreadRandomFieldHandler) assignVariable(expression *formula.Expression, variableMapper *field.VariableMapper) {
+	for k, v := range variableMapper.Mapper {
+		if v.Constant != nil {
 
+		}
+	}
+}
+
+// 1. variable mapper를 하나의 객체로 따로 빼야 할 듯.
+func (s spreadRandomFieldHandler) calculateByField(equation string, expression formula.Expression, variableMapper *field.VariableMapper) error {
 	arguments := make(map[string]field.IVector)
-	err := calculator.DynamicLoop(&entity.MathInfo{equation, expression, variables, expression.GetArgumentKinds(), arguments})
+	// 2. variable x=1을 대입하는 부분 추가.
+	s.assignVariable(&expression, variableMapper)
+	// 3. t를 계속 변해가면서 값을 구해야 한다.
+	result, err := calculator.DynamicLoop(&entity.MathInfo{equation, &expression, variableMapper,
+		expression.GetArgumentKinds(), arguments})
 	if err != nil {
 		return fmt.Errorf("error while calculating field %s: %w", equation, err)
 	}
@@ -95,15 +107,15 @@ func (s spreadRandomFieldHandler) calculateByField(equation string, expression *
 								assignParser := s.parser.GetParser(equation)
 								if assignVisitor, ok := s.visitor.(*visitor.AssignVisitorImpl); ok {
 									assignVisitor.ArgumentMapper = arguments
-									assignVisitor.VariableValueMapper = variables
+									assignVisitor.VariableValueMapper = variableMapper
 									assignVisitor.Visit(assignParser.Equation())
 								}
 
 								for _, element := range expression.Elements {
 									switch e := element.(type) {
 									case formula.Variable:
-										variableValue := variables[e.Name]
-										value := variableValue.Mapper[calculator.BuildKey(arguments, e)]
+										variableValue := variableMapper[e.Name]
+										value := variableValue.Value[calculator.BuildKey(arguments, e)]
 										print(value)
 									}
 								}

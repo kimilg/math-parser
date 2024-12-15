@@ -8,7 +8,8 @@ import (
 	"strconv"
 )
 
-func DynamicLoop(mathInfo *entity.MathInfo) error {
+// 값을 구할 수 있는 상태에서 result를 압축.
+func DynamicLoop(mathInfo *entity.MathInfo) (*formula.Result, error) {
 	equation := mathInfo.Equation
 	expression := mathInfo.Expression
 	variableMapper := mathInfo.VariableMapper
@@ -17,66 +18,87 @@ func DynamicLoop(mathInfo *entity.MathInfo) error {
 
 	argumentKind := formula.PopArgumentKind(argumentKinds)
 	if argumentKind == nil {
-		return assignValue(mathInfo)
+		result, err := getResult(mathInfo)
+		if err != nil {
+			return nil, err
+		}
+		return result, nil
 	}
 	dimension := field.Dimension[argumentKind.SubCategory]
 	if dimension == 0 {
-		return fmt.Errorf("error while generating loop: there is no loop size definition for SubCategory" +
+		return nil, fmt.Errorf("error while generating loop: there is no loop size definition for SubCategory" +
 			argumentKind.SubCategory)
 	}
 	switch dimension {
 	case 3:
-		return dynamicLoopThree(equation, expression, variableMapper, argumentKinds, argumentKind, argumentMapper)
+		return nil, dynamicLoopThree(equation, expression, variableMapper, argumentKinds, argumentKind, argumentMapper)
 	case -1:
-		return dynamicLoopNone(equation, expression, variableMapper, argumentKinds, argumentKind, argumentMapper)
+		return nil, dynamicLoopNone(equation, expression, variableMapper, argumentKinds, argumentKind, argumentMapper)
 	default:
-		return fmt.Errorf("error while generating loop: there is no loop size other than 1 and 3")
+		return nil, fmt.Errorf("error while generating loop: there is no loop size other than 1 and 3")
 	}
 }
 
-func assignValue(mathInfo *entity.MathInfo) error {
+func getResult(mathInfo *entity.MathInfo) (*formula.Result, error) {
 	argumentMapper := mathInfo.ArgumentMapper
 	variableMapper := mathInfo.VariableMapper
 	expression := mathInfo.Expression
 
-	result := traverse(expression, argumentMapper, variableMapper)
+	result, err := traverse(expression, argumentMapper, variableMapper)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
-func traverse(expression *formula.Expression, argumentMapper map[string]field.IVector, variableValueMapper map[string]*field.Variable) *formula.Result {
+func traverse(expression *formula.Expression, argumentMapper map[string]field.IVector, variableMapper *field.VariableMapper) (*formula.Result, error) {
 	if len(expression.Elements) == 3 {
 		if operator, ok := expression.Elements[1].(byte); ok {
-			left := traverse(expression.Elements[0].(*formula.Expression), argumentMapper, variableValueMapper)
-			right := traverse(expression.Elements[2].(*formula.Expression), argumentMapper, variableValueMapper)
+			left, err := traverse(expression.Elements[0].(*formula.Expression), argumentMapper, variableMapper)
+			if err != nil {
+				return nil, fmt.Errorf("error while traversing expression: %w", err)
+			}
+			right, err := traverse(expression.Elements[2].(*formula.Expression), argumentMapper, variableMapper)
+			if err != nil {
+				return nil, fmt.Errorf("error while traversing expression: %w", err)
+			}
 			switch operator {
 			case formula.EQUAL:
-				return left.Equal(right)
+				result, err := left.Equal(right)
+				if err != nil {
+					return nil, fmt.Errorf("traverse error: %w", err)
+				}
+				return result, nil
 			case formula.PLUS:
-				return left.Plus(right)
+				return left.Plus(right), nil
 			case formula.MINUS:
-				return left.Minus(right)
+				return left.Minus(right), nil
 			case formula.MULT:
-				return left.Mult(right)
-
+				return left.Mult(right), nil
 			default:
 				panic("unhandled default case")
 			}
 		}
 	}
+	if len(expression.Elements) == 1 {
+		
+	}
 
 	for _, element := range expression.Elements {
 		switch e := element.(type) {
 		case formula.Variable:
-			variableValue := variableValueMapper[e.Name]
+			variableValue := variableMapper.Mapper[e.Name]
 			key, err := BuildKey(argumentMapper, e)
 			if err != nil {
-				return &formula.Result{Unknowns: []*formula.Unknown{{Name: e.Name, Value: nil}}}
+				return &formula.Result{Unknowns: []*formula.Unknown{{Name: e.Name, Value: nil}}}, nil
 			}
 
-			valueVector := variableValue.Mapper[key]
-			return &formula.Result{Unknowns: []*formula.Unknown{{Name: e.Name, Value: valueVector}}}
+			valueVector := variableValue.Value[key]
+			return &formula.Result{Unknowns: []*formula.Unknown{{Name: e.Name, Value: valueVector}}}, nil
 
 		case formula.Constant:
-			return &formula.Result{Constant: e.Value}
+			return &formula.Result{Constant: e.Value}, nil
 
 		}
 	}

@@ -10,6 +10,15 @@ type Unknown struct {
 	Value field.IVector
 }
 
+func (u *Unknown) hasValue() bool {
+	return u.Value != nil
+}
+
+func (u *Unknown) flipSign() *Unknown {
+	u.Value.FlipSign()
+	return u
+}
+
 func (u *Unknown) isSameType(other *Unknown) bool {
 	return u.Value.GetDimensions() == other.Value.GetDimensions()
 }
@@ -54,23 +63,4 @@ func (u *Unknown) Mult(other any) (*Unknown, error) {
 		}, nil
 	}
 	return nil, fmt.Errorf("cannot multiply to the Unknown: %v", u.Name)
-}
-
-func (u *Unknown) multUnknown(other *Unknown) *Unknown {
-	if u.Value == nil || other.Value == nil {
-		fmt.Errorf("unknown value is nil between (%v, %v)", u.Name, other.Name)
-	}
-	return &Unknown{Name: u.Name + ":" + other.Name,
-		Value: u.Value,
-	}
-}
-
-func (u *Unknown) multConstant(constant float32) *Unknown {
-	if u.Value == nil {
-		fmt.Errorf("unknown value is nil (%v)", u.Name)
-	}
-	return &Unknown{Name: u.Name,
-		Coefficient: u.Coefficient * constant,
-		Value:       u.Value.Mult(constant),
-	}
 }

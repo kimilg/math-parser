@@ -48,7 +48,7 @@ func (v *FormulaVisitorImpl) VisitExpr(ctx *parser.ExprContext) interface{} {
 		return &formula.Expression{
 			Elements: []formula.Element{
 				&formula.Constant{
-					Value: ctx.Constant().Accept(v).(float32),
+					Value: ctx.Constant().Accept(v).(string),
 				},
 			},
 			Description: "constant",
@@ -168,10 +168,10 @@ func (v *FormulaVisitorImpl) VisitGeneralId(ctx *parser.GeneralIdContext) interf
 
 func (v *FormulaVisitorImpl) VisitConstant(ctx *parser.ConstantContext) interface{} {
 	if ctx.GeneralIntLit() != nil {
-		return float64(ctx.GeneralIntLit().Accept(v).(int))
+		return ctx.GeneralIntLit().Accept(v).(string)
 	}
 	if ctx.FLOATLIT() != nil {
-		return ctx.FLOATLIT().Accept(v).(float64)
+		return ctx.FLOATLIT().Accept(v).(string)
 	}
 
 	return nil

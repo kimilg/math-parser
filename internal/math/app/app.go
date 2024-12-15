@@ -10,7 +10,7 @@ type Application struct {
 type Commands struct {
 	Parse             command.ParseHandler
 	SpreadRandomField command.SpreadRandomFieldHandler
-	SetVariable       command.SetVariableHandler
+	SetConstants      command.SetConstantsHandler
 }
 
 type Queries struct {

@@ -11,7 +11,7 @@ func New(httpServer HttpServer) *chi.Mux {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Post("/parse", httpServer.Parse)
-		r.Post("/variable", httpServer.AddVariable)
+		r.Post("/constant", httpServer.AddConstant)
 	})
 
 	return r

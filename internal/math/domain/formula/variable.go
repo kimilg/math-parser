@@ -3,14 +3,14 @@ package formula
 import "math-parser/internal/math/domain/field"
 
 type Variable struct {
-	Id               ID          `json:"id,omitempty"`
-	ClassificationID uint        `json:"classificationId,omitempty"`
-	Name             string      `json:"name,omitempty"`
-	Vcategory        string      `json:"vcategory,omitempty"`
-	Subscripts       []rune      `json:"subscripts,omitempty"`
-	Arguments        []*Argument `json:"arguments,omitempty"`
-	Description      string      `json:"description,omitempty"`
-	Value            field.IVector
+	Id               ID
+	ClassificationID uint
+	Name             string
+	Category         string
+	Subscripts       []rune
+	Arguments        []*Argument
+	Description      string
+	Constant         field.IVector
 }
 
 type ArgumentKey struct {

@@ -2,11 +2,12 @@ package formula
 
 type Constant struct {
 	Name        string  `json:"name"`
-	Value       float32 `json:"value"`
+	Category    string  `json:"category"`
+	Value       string `json:"value"`
 	Description string  `json:"description"`
 }
 
-type ConstantForm struct {
-	Value       string `json:"value"`
-	Description string `json:"description" form:"required"`
+type EquationConstants struct {
+	Equation  string      `json:"equation" form:"required"`
+	Constants []*Constant `json:"constants" form:"required"`
 }
